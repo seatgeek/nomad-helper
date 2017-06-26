@@ -33,17 +33,27 @@ Any `NOMAD_*` env that the native `nomad` CLI tool support, is supported by this
 
 The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 
-## Drain
+## Usage
 
-`nomad-helper drain` will drain the node specified by the `NOMAD_ADDR` environment variable, and block until all allocations no longer have "running" or "pending" state.
+The `nomad-helper` binary has several helper subcommands.
 
-## Scale Export
+### `drain`
 
-`nomad-helper scale-export perf.yml` will write the remote Nomad Cluster (from `$NOMAD_ADDR` env) `job  + group + count` values to to `perf.yml`
+`nomad-helper drain` will drain the node and block until all allocations no longer have "running" or "pending" state.
 
-## Scale Import
+The node to be drained is specified via the `$NOMAD_ADDR` environment variable.
 
-`nomad-helper scale-import perf.yml` will change the Remote Nomad Cluster `job + group + count` values according to the values in `perf.yaml`
+### `scale-export`
+
+`nomad-helper scale-export production.yml` will read the Nomad cluster `job  + group + count` values and write them to a local `production.yml` file.
+
+The Nomad cluster is specified via the `$NOMAD_ADDR` environment variable.
+
+### `scale-import`
+
+`nomad-helper scale-import production.yml` will update the Nomad cluster `job + group + count` values according to the values in a local `production.yaml` file.
+
+The Nomad cluster is specified via the `$NOMAD_ADDR` environment variable.
 
 ## Example Scale config
 
@@ -53,7 +63,7 @@ info:
   exported_by: jippi
   nomad_addr: http://nomad.service.consul:4646
 groups:
-- job: api-cronq
+- job: api-http
   group: server
   count: 0
 - job: api-es
