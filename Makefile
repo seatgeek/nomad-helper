@@ -40,8 +40,8 @@ vet: fmt
 		echo "and fix them if necessary before submitting the code for review."; \
 	fi
 
-BINARIES = $(addprefix $(BUILD_DIR)/nomad-scale-helper, $(GOBUILD))
-$(BINARIES): $(BUILD_DIR)/nomad-scale-helper%: $(BUILD_DIR)
+BINARIES = $(addprefix $(BUILD_DIR)/nomad-helper, $(GOBUILD))
+$(BINARIES): $(BUILD_DIR)/nomad-helper%: $(BUILD_DIR)
 	@echo "=> building $@ ..."
 	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 govendor build -o $@
 
@@ -49,11 +49,3 @@ $(BINARIES): $(BUILD_DIR)/nomad-scale-helper%: $(BUILD_DIR)
 dist: install fmt vet
 	@echo "=> building ..."
 	$(MAKE) -j $(BINARIES)
-
-.PHONY: docker
-docker: install
-	rm -rf build/
-	GOBUILD="linux-amd64" $(MAKE) -j dist
-	docker build -t nomad-scale-helper .
-	docker tag nomad-scale-helper:latest 093535234988.dkr.ecr.us-east-1.amazonaws.com/nomad-scale-helper:latest
-	docker push 093535234988.dkr.ecr.us-east-1.amazonaws.com/nomad-scale-helper:latest

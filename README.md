@@ -1,4 +1,4 @@
-# nomad-scale-helper
+# nomad-helper
 
 `export NOMAD_ADDR=http://<ip>:4646`
 
