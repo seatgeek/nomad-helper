@@ -40,8 +40,8 @@ vet: fmt
 		echo "and fix them if necessary before submitting the code for review."; \
 	fi
 
-BINARIES = $(addprefix $(BUILD_DIR)/nomad-helper, $(GOBUILD))
-$(BINARIES): $(BUILD_DIR)/nomad-helper%: $(BUILD_DIR)
+BINARIES = $(addprefix $(BUILD_DIR)/nomad-helper-, $(GOBUILD))
+$(BINARIES): $(BUILD_DIR)/nomad-helper-%: $(BUILD_DIR)
 	@echo "=> building $@ ..."
 	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 govendor build -o $@
 

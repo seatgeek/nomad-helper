@@ -1,6 +1,16 @@
 # nomad-helper
 
-`export NOMAD_ADDR=http://<ip>:4646`
+## Running
+
+The project got build artifacts for linux, darwin and windows in the [GitHub releases tab](https://github.com/seatgeek/nomad-helper/releases).
+
+A docker container is also provided at [seatgeek/nomad-helper](seatgeek/nomad-helper)
+
+## Configuration
+
+Any `NOMAD_*` env that the native `nomad` CLI tool support, is supported by this tool.
+
+The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 
 ## Drain
 
