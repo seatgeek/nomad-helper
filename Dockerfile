@@ -6,5 +6,5 @@ RUN apk --update upgrade && \
     update-ca-certificates && \
     rm -rf /var/cache/apk/*
 
-ADD ./backend/build/nomad-helper-linux-amd64 /nomad-helper
+ADD ./build/nomad-helper-linux-amd64 /nomad-helper
 ENTRYPOINT ["/nomad-helper"]
