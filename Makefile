@@ -49,3 +49,11 @@ $(BINARIES): $(BUILD_DIR)/nomad-helper%: $(BUILD_DIR)
 dist: install fmt vet
 	@echo "=> building ..."
 	$(MAKE) -j $(BINARIES)
+
+.PHONY: docker
+docker:
+	@echo "=> build and push Docker image ..."
+	@docker login -e $(DOCKER_EMAIL) -u $(DOCKER_USER) -p $(DOCKER_PASS)
+	docker build -f Dockerfile -t seatgeek/nomad-helper:$(COMMIT) .
+	docker tag seatgeek/nomad-helper:$(COMMIT) seatgeek/nomad-helper:$(TAG)
+	docker push seatgeek/nomad-helper:$(TAG)
