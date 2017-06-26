@@ -36,13 +36,15 @@ after_success:
   - if [[ "$BRANCH" == "master" ]]; then make -j docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS TAG=latest COMMIT=$TRAVIS_COMMIT; fi
 
 deploy:
-  - provider: releases
-    api_key: ${GITHUB_API_KEY}
-    file:
-      - backend/build/nomad-helper-linux-amd64
-      - backend/build/nomad-helper-windows-amd64
-      - backend/build/nomad-helper-darwin-amd64
-    skip_cleanup: true
-    overwrite: true
-    on:
-      tags: true
+  provider: releases
+  api_key:
+    secure: Fe1dfXpqxXaiW6hd596Q/l4ZjyGLqwUllCWSB0Zj95CiokxJiwuTZdMubyxDcR3f1grFJvr4oYjk9klr43jJleSj2QcBrSxBIo0ODg1vWOTlfnPvG6QVrDaDmyNE85iLObvXSErqOQsd+4MEuo5lAvByJveDCJ1bLgtFl+cM1yuz6BIOKh6nZ61NqySUJxJbRobLHyXfEiWbWw0IONTPczt1M6Dg0JRguEKbdlPEathf4k1MuwU42xi3AC58Z3UKitzWCZHIIUaDpbYzS+mrJrINdQtFMSxhitAlvCIOd+p1Sr70yD1c4CGsffkN++m8vmOtuLC/ewkc8HNyDRJ6NOFaVSglBH3hO0dgsI3rSh980m/a5zPIvCARZgZz01aeBoJM7mm6iNB48zZXf4fM5jiFJwlNhIN67LW9Q9OKehiKNMX7i6SQ97GyjXpNMGZ8Vk3qdXDHxRiIW8KlEY3UaNLlzNR2ulO4hVMOhdwbuqo0YCMmxWbtr/Hb9n8urGdgQ75roGM1DrxNVws8oEk+GyGr5fdPq0wCL2U/DWMl23HN9MjQXahzyrn401zJ0EywnvPnDh2OfRXShPWreOFCMeyBMcxo0tWCHHsL0QeXYK1M6JHfcU4V7BdR3oAYLwSH1Vj8rX0i4bjwR+zWJZ5TD/jtIYJFJngo5zKD+DV6AxM=
+  file:
+    - build/nomad-helper-linux-amd64
+    - build/nomad-helper-windows-amd64
+    - build/nomad-helper-darwin-amd64
+  skip_cleanup: true
+  overwrite: true
+  on:
+    tags: true
+    repo: seatgeek/nomad-helper
