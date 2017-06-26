@@ -4,7 +4,7 @@
 
 The project got build artifacts for linux, darwin and windows in the [GitHub releases tab](https://github.com/seatgeek/nomad-helper/releases).
 
-A docker container is also provided at [seatgeek/nomad-helper](seatgeek/nomad-helper)
+A docker container is also provided at [seatgeek/nomad-helper](https://hub.docker.com/r/seatgeek/nomad-helper/tags/)
 
 ## Configuration
 
