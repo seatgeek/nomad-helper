@@ -6,6 +6,27 @@ The project got build artifacts for linux, darwin and windows in the [GitHub rel
 
 A docker container is also provided at [seatgeek/nomad-helper](https://hub.docker.com/r/seatgeek/nomad-helper/tags/)
 
+## Requirements
+
+- Go 1.8
+
+## Building
+
+To build a binary, run the following
+
+```shell
+# get this repo
+go get github.com/seatgeek/nomad-helper
+
+# go to the repo directory
+cd $GOPATH/src/github.com/seatgeek/nomad-helper
+
+# build the `nomad-helper` binary
+make build
+```
+
+This will create a `nomad-helper` binary in your `$GOPATH/bin` directory.
+
 ## Configuration
 
 Any `NOMAD_*` env that the native `nomad` CLI tool support, is supported by this tool.
@@ -30,7 +51,7 @@ The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 info:
   exported_at: Fri, 23 Jun 2017 18:39:47 +0000
   exported_by: jippi
-  nomad_addr: http://consul.service.seatgeek.perf:4646
+  nomad_addr: http://nomad.service.consul:4646
 groups:
 - job: api-cronq
   group: server
