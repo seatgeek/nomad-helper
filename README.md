@@ -29,7 +29,7 @@ This will create a `nomad-helper` binary in your `$GOPATH/bin` directory.
 
 ## Configuration
 
-Any `NOMAD_*` env that the native `nomad` CLI tool support, is supported by this tool.
+Any `NOMAD_*` env that the native `nomad` CLI tool supports are supported by this tool.
 
 The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 
