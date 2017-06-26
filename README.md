@@ -35,7 +35,7 @@ The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 
 ## Drain
 
-`nomad-helper drain` will drain the node, and block until all allocations no longer have "running" or "pending" state.
+`nomad-helper drain` will drain the node specified by the `NOMAD_ADDR` environment variable, and block until all allocations no longer have "running" or "pending" state.
 
 ## Scale Export
 
