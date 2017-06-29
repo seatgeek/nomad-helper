@@ -10,18 +10,17 @@ import (
 	cli "gopkg.in/urfave/cli.v1"
 )
 
+// JobState ...
+type JobState map[string]int
+
 // NomadState ...
 type NomadState struct {
-	Info   map[string]string
-	Groups []NomadTaskGroupState
+	Info map[string]string
+	Jobs map[string]TaskGroupState
 }
 
-// NomadTaskGroupState ...
-type NomadTaskGroupState struct {
-	Job   string
-	Group string
-	Count int
-}
+// TaskGroupState ...
+type TaskGroupState map[string]int
 
 func main() {
 	app := cli.NewApp()

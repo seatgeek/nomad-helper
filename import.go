@@ -28,72 +28,62 @@ func importCommand(file string) error {
 		return err
 	}
 
-	modifiedJobs := make(map[string]*api.Job)
+	for localJobName, jobGroups := range localState.Jobs {
+		log.Info("")
+		log.Infof("%s", localJobName)
 
-	for _, localGroupState := range localState.Groups {
-		log.Infof("Processing %s -> %s", localGroupState.Job, localGroupState.Group)
-
-		index := localGroupState.Job + "_" + localGroupState.Group
-
-		// see if we have processed the job already
-		remoteJob, existingJob := modifiedJobs[index]
-		if !existingJob {
-			remoteJob, _, err = client.Jobs().Info(localGroupState.Job, &api.QueryOptions{})
-			if err != nil {
-				log.Errorf("  Could not find remote job: %s", err)
-				continue
-			}
+		remoteJob, _, err := client.Jobs().Info(localJobName, &api.QueryOptions{})
+		if err != nil {
+			log.Errorf("--> Could not find remote job: %s", err)
+			continue
 		}
 
 		// Test if we can find the local group state group name in the remote job
 		foundRemoteGroup := false
-		shouldUpdate := true
+		shouldUpdate := false
 		oldCount := 0
 
-		for i, jobGroup := range remoteJob.TaskGroups {
-			if *jobGroup.Name != localGroupState.Group {
-				continue
-			}
+		for localGroupName, localGroupCount := range jobGroups {
+			log.Infof("--> %s", localGroupName)
+			for i, jobGroup := range remoteJob.TaskGroups {
+				// Name doesn't match
+				if localGroupName != *jobGroup.Name {
+					continue
+				}
 
-			foundRemoteGroup = true
+				foundRemoteGroup = true
 
-			// Don't bother to update if the count is already the same
-			if *jobGroup.Count == localGroupState.Count {
-				shouldUpdate = false
-				log.Info("  Skipping update since remote and local count is the same")
+				// Don't bother to update if the count is already the same
+				if *jobGroup.Count == localGroupCount {
+					log.Info("----> Skipping update since remote and local count is the same")
+					break
+				}
+
+				// Update the remote count
+				oldCount = *jobGroup.Count
+
+				remoteJob.TaskGroups[i].Count = &localGroupCount
+
+				log.Infof("----> Will change group count from %d to %d", oldCount, localGroupCount)
+
+				shouldUpdate = true
 				break
 			}
 
-			// Update the remote count
-			oldCount = int(*jobGroup.Count)
-
-			remoteJob.TaskGroups[i].Count = &localGroupState.Count
-			break
+			// If we could not find the job, alert and move on to the next
+			if !foundRemoteGroup {
+				log.Error("----> Could not find the group in remote cluster job")
+				continue
+			}
 		}
 
-		// If we could not find the job, alert and move on to the next
-		if !foundRemoteGroup {
-			log.Error("  Could not find the group in remote cluster job")
-			continue
+		if shouldUpdate {
+			_, _, err = client.Jobs().Register(remoteJob, &api.WriteOptions{})
+			if err != nil {
+				log.Error(err)
+				continue
+			}
 		}
-
-		//
-		if !shouldUpdate {
-			continue
-		}
-
-		log.Infof("  Will change group count from %d to %d", oldCount, localGroupState.Count)
-
-		// Add or overwrite the remote job reference in modified jobs
-		modifiedJobs[index] = remoteJob
-
-		_, _, err := client.Jobs().Register(remoteJob, &api.WriteOptions{})
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-
-		log.Infof("  Successfully updated job %s", *remoteJob.ID)
 	}
 
 	return nil

@@ -31,7 +31,10 @@ func exportCommand(file string) error {
 	info["exported_at"] = time.Now().UTC().Format(time.RFC1123Z)
 	info["exported_by"] = os.Getenv("USER")
 
-	state := &NomadState{Info: info}
+	state := &NomadState{
+		Info: info,
+		Jobs: make(map[string]TaskGroupState),
+	}
 
 	for _, jobStub := range jobStubs {
 		log.Debugf("Scanning job %s", jobStub.Name)
@@ -41,17 +44,15 @@ func exportCommand(file string) error {
 			log.Errorf("Could not fetch job %s", jobStub.Name)
 		}
 
+		jobState := TaskGroupState{}
+
 		for _, group := range job.TaskGroups {
 			log.Infof("%s -> %s = %d", jobStub.Name, *group.Name, *group.Count)
 
-			x := NomadTaskGroupState{
-				Job:   jobStub.Name,
-				Group: *group.Name,
-				Count: *group.Count,
-			}
-
-			state.Groups = append(state.Groups, x)
+			jobState[*group.Name] = *group.Count
 		}
+
+		state.Jobs[*job.ID] = jobState
 	}
 
 	bytes, err := yaml.Marshal(state)

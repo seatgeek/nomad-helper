@@ -28,20 +28,14 @@ The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 
 ```
 info:
-  exported_at: Fri, 23 Jun 2017 18:39:47 +0000
+  exported_at: Thu, 29 Jun 2017 13:11:19 +0000
   exported_by: jippi
-  nomad_addr: http://consul.service.seatgeek.perf:4646
-groups:
-- job: api-cronq
-  group: server
-  count: 0
-- job: api-es
-  group: api-es-1
-  count: 1
-- job: api-es
-  group: api-es-2
-  count: 1
-- job: api-es
-  group: api-es-3
-  count: 1
-  ```
+  nomad_addr: http://nomad.service.consul:4646
+jobs:
+  nginx:
+    server: 10
+  api-es:
+    api-es-1: 1
+    api-es-2: 1
+    api-es-3: 1
+```
