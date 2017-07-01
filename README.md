@@ -45,9 +45,13 @@ The `nomad-helper` binary has several helper subcommands.
 
 ### `drain`
 
-`nomad-helper drain` will drain the node and block until all allocations no longer have "running" or "pending" state.
+`nomad-helper drain` will dr1ain the node and block until all allocations no longer have "running" or "pending" state.
 
 The node to be drained is specified via the `$NOMAD_ADDR` environment variable.
+
+### `gc`
+
+`nomad-helper gc` will force a cluster garbage collection.
 
 ### `scale-export`
 

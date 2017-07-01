@@ -75,6 +75,13 @@ func main() {
 				return reevaluateCommand()
 			},
 		},
+		{
+			Name:  "gc",
+			Usage: "Force a cluster GC",
+			Action: func(c *cli.Context) error {
+				return gcCommand()
+			},
+		},
 	}
 	app.Before = func(c *cli.Context) error {
 		// convert the human passed log level into logrus levels
