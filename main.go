@@ -68,6 +68,13 @@ func main() {
 				return drainCommand()
 			},
 		},
+		{
+			Name:  "reevaluate-all",
+			Usage: "Force re-evaluate all jobs",
+			Action: func(c *cli.Context) error {
+				return reevaluateCommand()
+			},
+		},
 	}
 	app.Before = func(c *cli.Context) error {
 		// convert the human passed log level into logrus levels

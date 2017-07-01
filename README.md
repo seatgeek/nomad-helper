@@ -39,6 +39,10 @@ The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 
 The `nomad-helper` binary has several helper subcommands.
 
+### `reevaluate-all`
+
+`nomad-helper reevaluate-all` will force re-evaluate all jobs in the cluster. This will cause failed or lost allocations to be put back into the cluster.
+
 ### `drain`
 
 `nomad-helper drain` will drain the node and block until all allocations no longer have "running" or "pending" state.
