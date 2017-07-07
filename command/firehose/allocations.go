@@ -10,7 +10,15 @@ import (
 	log "github.com/Sirupsen/logrus"
 	consul "github.com/hashicorp/consul/api"
 	nomad "github.com/hashicorp/nomad/api"
+	"github.com/seatgeek/nomad-helper/command/firehose/sink"
 )
+
+// Sink ...s
+type Sink interface {
+	Start() error
+	Stop()
+	Put(data []byte) error
+}
 
 // AllocationFirehose ...
 type AllocationFirehose struct {
@@ -20,6 +28,7 @@ type AllocationFirehose struct {
 	consulLock      *consul.Lock
 	stopCh          chan struct{}
 	lastChangeTime  int64
+	sink            Sink
 }
 
 // AllocationUpdate ...
@@ -58,6 +67,7 @@ func NewAllocationFirehose(lock *consul.Lock, sessionID string) (*AllocationFire
 		consulClient:    consulClient,
 		consulSessionID: sessionID,
 		consulLock:      lock,
+		sink:            sink.NewKinesis(),
 	}, nil
 }
 
@@ -68,6 +78,8 @@ func (f *AllocationFirehose) Start() error {
 	if err != nil {
 		return err
 	}
+
+	go f.sink.Start()
 
 	// Stop chan for all tasks to depend on
 	f.stopCh = make(chan struct{})
@@ -93,6 +105,7 @@ func (f *AllocationFirehose) Start() error {
 // Stop the firehose
 func (f *AllocationFirehose) Stop() {
 	close(f.stopCh)
+	f.sink.Stop()
 	f.writeLastChangeTime()
 }
 
@@ -160,6 +173,8 @@ func (f *AllocationFirehose) Publish(update *AllocationUpdate) {
 	}
 
 	log.Info(string(b))
+
+	f.sink.Put(b)
 }
 
 // Continously watch for changes to the allocation list and publish it as updates
