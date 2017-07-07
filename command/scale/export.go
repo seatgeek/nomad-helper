@@ -1,9 +1,11 @@
-package main
+package scale
 
 import (
 	"io/ioutil"
 	"time"
 
+	"github.com/seatgeek/nomad-helper/nomad"
+	"github.com/seatgeek/nomad-helper/structs"
 	yaml "gopkg.in/yaml.v2"
 
 	"os"
@@ -12,10 +14,10 @@ import (
 	"github.com/hashicorp/nomad/api"
 )
 
-func exportCommand(file string) error {
+func ExportCommand(file string) error {
 	log.Info("Reading jobs from Nomad")
 
-	client, err := NewNomadClient()
+	client, err := nomad.NewNomadClient()
 	if err != nil {
 		return err
 	}
@@ -31,9 +33,9 @@ func exportCommand(file string) error {
 	info["exported_at"] = time.Now().UTC().Format(time.RFC1123Z)
 	info["exported_by"] = os.Getenv("USER")
 
-	state := &NomadState{
+	state := &structs.NomadState{
 		Info: info,
-		Jobs: make(map[string]TaskGroupState),
+		Jobs: make(map[string]structs.TaskGroupState),
 	}
 
 	for _, jobStub := range jobStubs {
@@ -44,7 +46,7 @@ func exportCommand(file string) error {
 			log.Errorf("Could not fetch job %s", jobStub.Name)
 		}
 
-		jobState := TaskGroupState{}
+		jobState := structs.TaskGroupState{}
 
 		for _, group := range job.TaskGroups {
 			log.Infof("%s -> %s = %d", jobStub.Name, *group.Name, *group.Count)

@@ -1,4 +1,4 @@
-package main
+package scale
 
 import (
 	"io/ioutil"
@@ -7,9 +7,11 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/hashicorp/nomad/api"
+	"github.com/seatgeek/nomad-helper/nomad"
+	"github.com/seatgeek/nomad-helper/structs"
 )
 
-func importCommand(file string) error {
+func ImportCommand(file string) error {
 	log.Info("Reading state file")
 
 	data, err := ioutil.ReadFile(file)
@@ -17,13 +19,13 @@ func importCommand(file string) error {
 		return err
 	}
 
-	localState := &NomadState{}
+	localState := &structs.NomadState{}
 	err = yaml.Unmarshal(data, &localState)
 	if err != nil {
 		return err
 	}
 
-	client, err := NewNomadClient()
+	client, err := nomad.NewNomadClient()
 	if err != nil {
 		return err
 	}

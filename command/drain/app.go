@@ -1,4 +1,4 @@
-package main
+package drain
 
 import (
 	"fmt"
@@ -6,13 +6,14 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/hashicorp/nomad/api"
+	"github.com/seatgeek/nomad-helper/nomad"
 )
 
-func drainCommand() error {
+func App() error {
 	log.Info("Starting drain")
 
 	// Create Nomad API client
-	client, err := NewNomadClient()
+	client, err := nomad.NewNomadClient()
 	if err != nil {
 		return err
 	}
