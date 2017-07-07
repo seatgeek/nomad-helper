@@ -8,6 +8,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/seatgeek/nomad-helper/command/drain"
+	"github.com/seatgeek/nomad-helper/command/firehose"
 	"github.com/seatgeek/nomad-helper/command/gc"
 	"github.com/seatgeek/nomad-helper/command/reevaluate"
 	"github.com/seatgeek/nomad-helper/command/scale"
@@ -72,6 +73,13 @@ func main() {
 			Usage: "Force a cluster GC",
 			Action: func(c *cli.Context) error {
 				return gc.App()
+			},
+		},
+		{
+			Name:  "firehose",
+			Usage: "Firehose emit cluster changes",
+			Action: func(c *cli.Context) error {
+				return firehose.App()
 			},
 		},
 	}

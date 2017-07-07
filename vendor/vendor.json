@@ -27,10 +27,10 @@
 			"revisionTime": "2016-12-05T14:13:22Z"
 		},
 		{
-			"checksumSHA1": "L4bajYItNZdsrcbvTza6vtLCDis=",
+			"checksumSHA1": "SodYLQcoCdaC65THb0YQJ7Qrkn4=",
 			"path": "github.com/hashicorp/consul/api",
-			"revision": "4b51d00458da8f6241498d7191b3daf1d1f81159",
-			"revisionTime": "2017-06-25T17:42:37Z"
+			"revision": "be782ae45ee346d0a7e83596dd97d19b310882a7",
+			"revisionTime": "2017-07-07T07:21:40Z"
 		},
 		{
 			"checksumSHA1": "cdOCt0Yb+hdErz8NAQqayxPmRsY=",
@@ -159,5 +159,5 @@
 			"revisionTime": "2017-04-07T17:21:22Z"
 		}
 	],
-	"rootPath": "github.com/seatgeek/nomad-scale-helper"
+	"rootPath": "github.com/seatgeek/nomad-helper"
 }
