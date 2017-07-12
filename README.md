@@ -65,6 +65,24 @@ The Nomad cluster is specified via the `$NOMAD_ADDR` environment variable.
 
 The Nomad cluster is specified via the `$NOMAD_ADDR` environment variable.
 
+### `firehose`
+
+`nomad-helper firehose` will monitor all alocation changes in the Nomad cluster and emit each task state as a new event to either stdout, rabbitmq or kinesis.
+
+The script will use Consul to maintain leader and the last event time processed (saved on quit or every 10s).
+
+The Nomad cluster is specified via the `$NOMAD_ADDR` environment variable.
+
+The Consul cluster is specified via the `$CONSUL_HTTP_ADDR` environment variable.
+
+The sink type is specified via the `$SINK_TYPE` environment variable. Valid values are: stdout, kinesis and amqp.
+
+The `amqp` sink is configured using `$SINK_AMQP_CONNECTION`, `$SINK_AMQP_EXCHANGE` and `$SINK_AMQP_ROUTING_KEY` environment variables.
+
+The `kinesis` sink is configured using `$SINK_KINESIS_STREAM_NAME` and `$SINK_KINESIS_PARTITION_KEY` environment variables.
+
+The `stdout` sink do not have any configuration.
+
 ## Example Scale config
 
 ```
