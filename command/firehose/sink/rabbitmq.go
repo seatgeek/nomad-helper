@@ -110,7 +110,7 @@ func (s *RabbitmqSink) write(id int) {
 			err = ch.Publish(
 				s.exchange,   // exchange
 				s.routingKey, // routing key
-				false,        // mandatory
+				true,         // mandatory
 				false,        // immediate
 				amqp.Publishing{
 					ContentType: "application/json",

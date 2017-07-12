@@ -81,7 +81,7 @@ func NewAllocationFirehose(lock *consul.Lock, sessionID string) (*AllocationFire
 func getSink() (Sink, error) {
 	sinkType := os.Getenv("SINK_TYPE")
 	if sinkType == "" {
-		return nil, fmt.Errorf("Missing SINK_TYPE: amqp or kinesis")
+		return nil, fmt.Errorf("Missing SINK_TYPE: amqp, kinesis or stdout")
 	}
 
 	switch sinkType {
@@ -91,8 +91,10 @@ func getSink() (Sink, error) {
 		return sink.NewRabbitmq()
 	case "kinesis":
 		return sink.NewKinesis()
+	case "stdout":
+		return sink.NewStdout()
 	default:
-		return nil, fmt.Errorf("Invalid SINK_TYPE: amqp or kinesis")
+		return nil, fmt.Errorf("Invalid SINK_TYPE: amqp, kinesis or stdout")
 	}
 }
 
@@ -191,13 +193,10 @@ func (f *AllocationFirehose) writeLastChangeTime() {
 
 // Publish an update from the firehose
 func (f *AllocationFirehose) Publish(update *AllocationUpdate) {
-	log.Infof("%s -> %s -> %s: %s", update.JobID, update.GroupName, update.TaskName, update.TaskEvent.DriverMessage)
 	b, err := json.Marshal(update)
 	if err != nil {
 		log.Error(err)
 	}
-
-	log.Info(string(b))
 
 	f.sink.Put(b)
 }
