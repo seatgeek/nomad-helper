@@ -1,12 +1,13 @@
-package main
+package reevaluate
 
 import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/hashicorp/nomad/api"
+	"github.com/seatgeek/nomad-helper/nomad"
 )
 
-func reevaluateCommand() error {
-	client, err := NewNomadClient()
+func App() error {
+	client, err := nomad.NewNomadClient()
 	if err != nil {
 		return err
 	}

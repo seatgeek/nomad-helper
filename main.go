@@ -7,20 +7,13 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/seatgeek/nomad-helper/command/drain"
+	"github.com/seatgeek/nomad-helper/command/firehose"
+	"github.com/seatgeek/nomad-helper/command/gc"
+	"github.com/seatgeek/nomad-helper/command/reevaluate"
+	"github.com/seatgeek/nomad-helper/command/scale"
 	cli "gopkg.in/urfave/cli.v1"
 )
-
-// JobState ...
-type JobState map[string]int
-
-// NomadState ...
-type NomadState struct {
-	Info map[string]string
-	Jobs map[string]TaskGroupState
-}
-
-// TaskGroupState ...
-type TaskGroupState map[string]int
 
 func main() {
 	app := cli.NewApp()
@@ -46,7 +39,7 @@ func main() {
 					return fmt.Errorf("Missing file name")
 				}
 
-				return exportCommand(configFile)
+				return scale.ExportCommand(configFile)
 			},
 		},
 		{
@@ -58,28 +51,35 @@ func main() {
 					return fmt.Errorf("Missing file name")
 				}
 
-				return importCommand(configFile)
+				return scale.ImportCommand(configFile)
 			},
 		},
 		{
 			Name:  "drain",
 			Usage: "Drain node and wait for all allocations to stop",
 			Action: func(c *cli.Context) error {
-				return drainCommand()
+				return drain.App()
 			},
 		},
 		{
 			Name:  "reevaluate-all",
 			Usage: "Force re-evaluate all jobs",
 			Action: func(c *cli.Context) error {
-				return reevaluateCommand()
+				return reevaluate.App()
 			},
 		},
 		{
 			Name:  "gc",
 			Usage: "Force a cluster GC",
 			Action: func(c *cli.Context) error {
-				return gcCommand()
+				return gc.App()
+			},
+		},
+		{
+			Name:  "firehose",
+			Usage: "Firehose emit cluster changes",
+			Action: func(c *cli.Context) error {
+				return firehose.App()
 			},
 		},
 	}
