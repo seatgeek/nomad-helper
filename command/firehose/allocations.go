@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"time"
 
+	"fmt"
+
 	log "github.com/Sirupsen/logrus"
 	consul "github.com/hashicorp/consul/api"
 	nomad "github.com/hashicorp/nomad/api"
@@ -62,13 +64,36 @@ func NewAllocationFirehose(lock *consul.Lock, sessionID string) (*AllocationFire
 		return nil, err
 	}
 
+	sink, err := getSink()
+	if err != nil {
+		return nil, err
+	}
+
 	return &AllocationFirehose{
 		nomadClient:     nomadClient,
 		consulClient:    consulClient,
 		consulSessionID: sessionID,
 		consulLock:      lock,
-		sink:            sink.NewKinesis(),
+		sink:            sink,
 	}, nil
+}
+
+func getSink() (Sink, error) {
+	sinkType := os.Getenv("SINK_TYPE")
+	if sinkType == "" {
+		return nil, fmt.Errorf("Missing SINK_TYPE: amqp or kinesis")
+	}
+
+	switch sinkType {
+	case "amqp":
+		fallthrough
+	case "rabbitmq":
+		return sink.NewRabbitmq()
+	case "kinesis":
+		return sink.NewKinesis()
+	default:
+		return nil, fmt.Errorf("Invalid SINK_TYPE: amqp or kinesis")
+	}
 }
 
 // Start the firehose

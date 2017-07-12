@@ -3,6 +3,10 @@ package sink
 import (
 	"time"
 
+	"os"
+
+	"fmt"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -11,23 +15,37 @@ import (
 
 // KinesisSink ...
 type KinesisSink struct {
-	session *session.Session
-	kinesis *kinesis.Kinesis
-	stopCh  chan interface{}
-	putCh   chan []byte
+	session      *session.Session
+	kinesis      *kinesis.Kinesis
+	streamName   string
+	partitionKey string
+	stopCh       chan interface{}
+	putCh        chan []byte
 }
 
 // NewKinesis ...
-func NewKinesis() *KinesisSink {
+func NewKinesis() (*KinesisSink, error) {
+	streamName := os.Getenv("SINK_KINESIS_STREAM_NAME")
+	if streamName == "" {
+		return nil, fmt.Errorf("[sink/kinesis] Missing SINK_KINESIS_STREAM_NAME")
+	}
+
+	partitionKey := os.Getenv("SINK_KINESIS_PARTITION_KEY")
+	if partitionKey == "" {
+		return nil, fmt.Errorf("[sink/kinesis] Missing SINK_KINESIS_PARTITION_KEY")
+	}
+
 	sess := session.Must(session.NewSession())
 	svc := kinesis.New(sess)
 
 	return &KinesisSink{
-		session: sess,
-		kinesis: svc,
-		stopCh:  make(chan interface{}),
-		putCh:   make(chan []byte, 1000),
-	}
+		session:      sess,
+		kinesis:      svc,
+		streamName:   streamName,
+		partitionKey: partitionKey,
+		stopCh:       make(chan interface{}),
+		putCh:        make(chan []byte, 1000),
+	}, nil
 }
 
 // Start ...
@@ -54,10 +72,10 @@ func (s *KinesisSink) Start() error {
 
 // Stop ...
 func (s *KinesisSink) Stop() {
-	log.Infof("[kinesis] ensure writer queue is empty (%d messages left)", len(s.putCh))
+	log.Infof("[sink/kinesis] ensure writer queue is empty (%d messages left)", len(s.putCh))
 
 	for len(s.putCh) > 0 {
-		log.Info("[kinesis] Waiting for queue to drain - (%d messages left)", len(s.putCh))
+		log.Info("[sink/kinesis] Waiting for queue to drain - (%d messages left)", len(s.putCh))
 		time.Sleep(1 * time.Second)
 	}
 
@@ -72,21 +90,24 @@ func (s *KinesisSink) Put(data []byte) error {
 }
 
 func (s *KinesisSink) write(id int) {
-	log.Infof("[kinesis/%d] Starting kinesis writer", id)
+	log.Infof("[sink/kinesis/%d] Starting writer", id)
+
+	streamName := aws.String(s.streamName)
+	partitionKey := aws.String(s.partitionKey)
 
 	for {
 		select {
 		case data := <-s.putCh:
 			putOutput, err := s.kinesis.PutRecord(&kinesis.PutRecordInput{
 				Data:         data,
-				StreamName:   aws.String("nomad-allocation-stream"),
-				PartitionKey: aws.String("key1"),
+				StreamName:   streamName,
+				PartitionKey: partitionKey,
 			})
 
 			if err != nil {
-				log.Errorf("[kinesis/%d] %s", id, err)
+				log.Errorf("[sink/kinesis/%d] %s", id, err)
 			} else {
-				log.Infof("[kinesis/%d] %v", id, putOutput)
+				log.Infof("[sink/kinesis/%d] %v", id, putOutput)
 			}
 		}
 	}
