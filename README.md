@@ -11,6 +11,7 @@ A docker container is also provided at [seatgeek/nomad-helper](https://hub.docke
 ## Requirements
 
 - Go 1.8
+- govender https://github.com/kardianos/govendor/
 
 ## Building
 
