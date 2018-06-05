@@ -68,7 +68,7 @@ The Nomad cluster is specified via the `$NOMAD_ADDR` environment variable.
 
 ## Example Scale config
 
-```
+```yml
 info:
   exported_at: Thu, 29 Jun 2017 13:11:19 +0000
   exported_by: jippi
