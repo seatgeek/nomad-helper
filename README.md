@@ -69,19 +69,20 @@ NAME:
    nomad-helper node - node specific commands that act on all Nomad clients that match the filters provided, rather than a single node
 
 USAGE:
-   nomad-helper node [filter options] command [command options] [arguments...]
+   nomad-helper node command [command options] [arguments...]
 
 COMMANDS:
      drain                  The node drain command is used to toggle drain mode on a given node. Drain mode prevents any new tasks from being allocated to the node, and begins migrating all existing allocations away
      eligibility, eligible  The eligibility command is used to toggle scheduling eligibility for a given node. By default node's are eligible for scheduling meaning they can receive placements and run new allocations. Node's that have their scheduling elegibility disabled are ineligibile for new placements.
 
 OPTIONS:
-   --filter-prefix value         Filter nodes by their ID (prefix matching)
-   --filter-class value          Filter nodes by their node class
-   --filter-nomad-version value  Filter nodes by their Nomad version
-   --filter-ami-version value    Filter nodes by their Instance AMI version (BaseAMI)
-   --noop                        Only output nodes that would be drained, don't do any modifications
-   --help, -h                    show help
+   --filter-prefix ef30d57c                                   Filter nodes by their ID with prefix matching ef30d57c
+   --filter-class batch-jobs                                  Filter nodes by their node class batch-jobs
+   --filter-version 0.8.4                                     Filter nodes by their Nomad version 0.8.4
+   --filter-meta 'aws.instance.availability-zone=us-east-1e'  Filter nodes by their meta key/value like 'aws.instance.availability-zone=us-east-1e'. Can be provided multiple times.
+   --filter-attribute 'driver.docker.version=17.09.0-ce'      Filter nodes by their attribute key/value like 'driver.docker.version=17.09.0-ce'. Can be provided multiple times.
+   --noop                                                     Only output nodes that would be drained, don't do any modifications
+   --help, -h                                                 show help
 ```
 
 ### drain

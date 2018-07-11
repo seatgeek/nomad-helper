@@ -106,19 +106,23 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "filter-prefix",
-					Usage: "Filter nodes by their ID (prefix matching)",
+					Usage: "Filter nodes by their ID with prefix matching `ef30d57c`",
 				},
 				cli.StringFlag{
 					Name:  "filter-class",
-					Usage: "Filter nodes by their node class",
+					Usage: "Filter nodes by their node class `batch-jobs`",
 				},
 				cli.StringFlag{
-					Name:  "filter-nomad-version",
-					Usage: "Filter nodes by their Nomad version",
+					Name:  "filter-version",
+					Usage: "Filter nodes by their Nomad version `0.8.4`",
 				},
-				cli.StringFlag{
-					Name:  "filter-ami-version",
-					Usage: "Filter nodes by their Instance AMI version (BaseAMI)",
+				cli.StringSliceFlag{
+					Name:  "filter-meta",
+					Usage: "Filter nodes by their meta key/value like `'aws.instance.availability-zone=us-east-1e'`. Can be provided multiple times.",
+				},
+				cli.StringSliceFlag{
+					Name:  "filter-attribute",
+					Usage: "Filter nodes by their attribute key/value like `'driver.docker.version=17.09.0-ce'`. Can be provided multiple times.",
 				},
 				cli.BoolFlag{
 					Name:  "noop",

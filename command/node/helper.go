@@ -2,6 +2,7 @@ package node
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/nomad/api"
 	log "github.com/sirupsen/logrus"
@@ -22,38 +23,67 @@ func filter(client *api.Client, c *cli.Context) ([]*api.NodeListStub, error) {
 	for _, node := range nodes {
 		// only consider nodes that is ready
 		if node.Status != "ready" {
-			log.Debugf("Node %s (%s) is not in status=ready (%s)", node.Name, node.NodeClass, node.Status)
+			log.Debugf("Node %s is not in status=ready (%s)", node.Name, node.Status)
 			continue
 		}
 
 		// only consider nodes with the right node class
 		if class := c.String("filter-class"); class != "" && node.NodeClass != class {
-			log.Debugf("Node %s (%s) to not match node class %s", node.Name, node.NodeClass, class)
+			log.Debugf("Node %s class '%s' do not match expected value '%s'", node.Name, node.NodeClass, class)
 			continue
 		}
 
 		// only consider nodes with the right nomad version
-		if version := c.String("filter-nomad-version"); version != "" && node.Version != version {
-			log.Debugf("Node %s (%s) to not match node version %s", node.Name, node.Version, version)
+		if version := c.String("filter-version"); version != "" && node.Version != version {
+			log.Debugf("Node %s version '%s' do not match expected node version '%s'", node.Name, node.Version, version)
 			continue
 		}
 
-		// only consider nodes with the right base ami version
-		if version := c.String("filter-ami-version"); version != "" {
-			if amiVersion := getNodeMetaProperty(node.ID, "aws.ami-version", client); amiVersion != version {
-				log.Debugf("Node %s (%s) AMI version do not match %s", node.Name, version, amiVersion)
-				continue
+		// filter by client meta keys
+		if meta := c.StringSlice("filter-meta"); len(meta) > 0 {
+			for _, chunk := range meta {
+				split := strings.Split(chunk, "=")
+				if len(split) != 2 {
+					return nil, fmt.Errorf("Could not marge filter-meta '%s' as 'key=value' pair", chunk)
+				}
+				key := split[0]
+				value := split[1]
+
+				if nodeValue := getNodeMetaProperty(node.ID, key, client); nodeValue != value {
+					log.Debugf("Node %s Meta key '%s' value '%s' do not match expected '%s'", node.Name, key, nodeValue, value)
+					goto NEXT_NODE
+				}
+			}
+		}
+
+		// filter by client attribute keys
+		if meta := c.StringSlice("filter-attribute"); len(meta) > 0 {
+			for _, chunk := range meta {
+				split := strings.Split(chunk, "=")
+				if len(split) != 2 {
+					return nil, fmt.Errorf("Could not marge filter-meta '%s' as 'key=value' pair", chunk)
+				}
+				key := split[0]
+				value := split[1]
+
+				if nodeValue := getNodeAttributesProperty(node.ID, key, client); nodeValue != value {
+					log.Debugf("Node %s Attribute key '%s' value '%s' do not match expected '%s'", node.Name, key, nodeValue, value)
+					goto NEXT_NODE
+				}
 			}
 		}
 
 		// continue to furhter processing
-		log.Debugf("Node %s (%s) is still good", node.Name, node.NodeClass)
+		log.Debugf("Node %s passed all all filters", node.Name)
 		matches = append(matches, node)
 
 		// noop mode should just print the nodes right away
 		if c.Bool("noop") {
-			log.Infof("Node %s (class: %s / version: %s)", node.Name, node.NodeClass, node.Version)
+			log.Infof("Node %s matched!", node.Name)
 		}
+
+	NEXT_NODE:
+		continue
 	}
 
 	log.Infof("Found %d matched nodes", len(matches))
@@ -80,7 +110,22 @@ func getNodeMetaProperty(nodeID string, key string, client *api.Client) string {
 	// spew.Dump(node)
 	d, ok := node.Meta[key]
 	if !ok {
+		return "__not_found__"
+	}
+	return d
+}
+
+func getNodeAttributesProperty(nodeID string, key string, client *api.Client) string {
+	node, err := lookupNode(nodeID, client)
+	if err != nil {
+		log.Errorf("Could not lookup the node in Nomad API: %s", err)
 		return ""
+	}
+
+	// spew.Dump(node)
+	d, ok := node.Attributes[key]
+	if !ok {
+		return "__not_found__"
 	}
 	return d
 }
