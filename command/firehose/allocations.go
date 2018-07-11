@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	consul "github.com/hashicorp/consul/api"
 	nomad "github.com/hashicorp/nomad/api"
+	log "github.com/sirupsen/logrus"
 )
 
 // AllocationFirehose ...

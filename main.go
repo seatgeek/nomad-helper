@@ -1,25 +1,25 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"sort"
+	"time"
 
-	"fmt"
-
-	log "github.com/Sirupsen/logrus"
-	"github.com/seatgeek/nomad-helper/command/drain"
 	"github.com/seatgeek/nomad-helper/command/firehose"
 	"github.com/seatgeek/nomad-helper/command/gc"
+	"github.com/seatgeek/nomad-helper/command/node"
 	"github.com/seatgeek/nomad-helper/command/reevaluate"
 	"github.com/seatgeek/nomad-helper/command/scale"
+	log "github.com/sirupsen/logrus"
 	cli "gopkg.in/urfave/cli.v1"
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "nomad-scale-helper"
+	app.Name = "nomad-helper"
 	app.Usage = "easily restore / snapshot your nomad job scale config"
-	app.Version = "0.1"
+	app.Version = "1.0"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -30,7 +30,7 @@ func main() {
 		},
 	}
 	app.Commands = []cli.Command{
-{
+		{
 			Name:  "node",
 			Usage: "node specific commands that act on all Nomad clients that match the filters provided, rather than a single node",
 			Flags: []cli.Flag{
@@ -154,13 +154,6 @@ func main() {
 				}
 
 				return scale.ImportCommand(configFile)
-			},
-		},
-		{
-			Name:  "drain",
-			Usage: "Drain node and wait for all allocations to stop",
-			Action: func(c *cli.Context) error {
-				return drain.App()
 			},
 		},
 		{

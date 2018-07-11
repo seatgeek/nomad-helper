@@ -1,8 +1,8 @@
 package gc
 
 import (
-	log "github.com/Sirupsen/logrus"
 	"github.com/seatgeek/nomad-helper/nomad"
+	log "github.com/sirupsen/logrus"
 )
 
 func App() error {

@@ -10,8 +10,8 @@ import (
 
 	"os"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/hashicorp/nomad/api"
+	log "github.com/sirupsen/logrus"
 )
 
 func ExportCommand(file string) error {

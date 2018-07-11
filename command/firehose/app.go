@@ -1,8 +1,8 @@
 package firehose
 
 import (
-	log "github.com/Sirupsen/logrus"
 	consul "github.com/hashicorp/consul/api"
+	log "github.com/sirupsen/logrus"
 )
 
 const (

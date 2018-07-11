@@ -1,5 +1,24 @@
 # nomad-helper
 
+<!-- TOC -->
+
+- [nomad-helper](#nomad-helper)
+    - [Running](#running)
+    - [Requirements](#requirements)
+    - [Building](#building)
+    - [Configuration](#configuration)
+    - [Usage](#usage)
+        - [node](#node)
+            - [drain](#drain)
+            - [eligibility](#eligibility)
+        - [`reevaluate-all`](#reevaluate-all)
+        - [`gc`](#gc)
+        - [`scale-export`](#scale-export)
+        - [`scale-import`](#scale-import)
+    - [Example Scale config](#example-scale-config)
+
+<!-- /TOC -->
+
 `nomad-helper` is a tool meant to enable teams to quickly onboard themselves with nomad, by exposing scaling functionality in a simple to use and share yaml format.
 
 ## Running
@@ -10,7 +29,7 @@ A docker container is also provided at [seatgeek/nomad-helper](https://hub.docke
 
 ## Requirements
 
-- Go 1.8
+- Go 1.10
 - govender https://github.com/kardianos/govendor/
 
 ## Building
@@ -40,31 +59,105 @@ The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 
 The `nomad-helper` binary has several helper subcommands.
 
+### node
+
+node specific commands that act on all Nomad clients that match the filters provided, rather than a single node
+
+```
+NAME:
+   nomad-helper node - node specific commands that act on all Nomad clients that match the filters provided, rather than a single node
+
+USAGE:
+   nomad-helper node [filter options] command [command options] [arguments...]
+
+COMMANDS:
+     drain                  The node drain command is used to toggle drain mode on a given node. Drain mode prevents any new tasks from being allocated to the node, and begins migrating all existing allocations away
+     eligibility, eligible  The eligibility command is used to toggle scheduling eligibility for a given node. By default node's are eligible for scheduling meaning they can receive placements and run new allocations. Node's that have their scheduling elegibility disabled are ineligibile for new placements.
+
+OPTIONS:
+   --filter-prefix value         Filter nodes by their ID (prefix matching)
+   --filter-class value          Filter nodes by their node class
+   --filter-nomad-version value  Filter nodes by their Nomad version
+   --filter-ami-version value    Filter nodes by their Instance AMI version (BaseAMI)
+   --noop                        Only output nodes that would be drained, don't do any modifications
+   --help, -h                    show help
+```
+
+#### drain
+
+```
+USAGE:
+   nomad-helper node [filter options] drain [command options] [arguments...]
+
+OPTIONS:
+   --enable           Enable node drain mode
+   --disable          Disable node drain mode
+   --deadline value   Set the deadline by which all allocations must be moved off the node. Remaining allocations after the deadline are force removed from the node. Defaults to 1 hour (default: 1h0m0s)
+   --no-deadline      No deadline allows the allocations to drain off the node without being force stopped after a certain deadline
+   --monitor          Enter monitor mode directly without modifying the drain status
+   --force            Force remove allocations off the node immediately
+   --detach           Return immediately instead of entering monitor mode
+   --ignore-system    Ignore system allows the drain to complete without stopping system job allocations. By default system jobs are stopped last.
+   --keep-ineligible  Keep ineligible will maintain the node's scheduling ineligibility even if the drain is being disabled. This is useful when an existing drain is being cancelled but additional scheduling on the node is not desired.
+```
+
+#### eligibility
+
+```
+NAME:
+   nomad-helper node eligibility - The eligibility command is used to toggle scheduling eligibility for a given node. By default node's are eligible for scheduling meaning they can receive placements and run new allocations. Node's that have their scheduling elegibility disabled are ineligibile for new placements.
+
+USAGE:
+   nomad-helper node [filter options] eligibility [command options] [arguments...]
+
+OPTIONS:
+   --enable   Enable scheduling eligbility
+   --disable  Disable scheduling eligibility
+```
+
 ### `reevaluate-all`
 
-`nomad-helper reevaluate-all` will force re-evaluate all jobs in the cluster. This will cause failed or lost allocations to be put back into the cluster.
+```
+NAME:
+   nomad-helper reevaluate-all - Force re-evaluate all jobs
 
-### `drain`
-
-`nomad-helper drain` will dr1ain the node and block until all allocations no longer have "running" or "pending" state.
-
-The node to be drained is specified via the `$NOMAD_ADDR` environment variable.
+USAGE:
+   nomad-helper reevaluate-all [arguments...]
+```
 
 ### `gc`
 
-`nomad-helper gc` will force a cluster garbage collection.
+```
+NAME:
+   nomad-helper gc - Force a cluster GC
+
+USAGE:
+   nomad-helper gc [arguments...]
+```
 
 ### `scale-export`
 
 `nomad-helper scale-export production.yml` will read the Nomad cluster `job  + group + count` values and write them to a local `production.yml` file.
 
-The Nomad cluster is specified via the `$NOMAD_ADDR` environment variable.
+```
+NAME:
+   nomad-helper scale-export - Export nomad job scale config to a local file
+
+USAGE:
+   nomad-helper scale-export [arguments...]
+```
 
 ### `scale-import`
 
 `nomad-helper scale-import production.yml` will update the Nomad cluster `job + group + count` values according to the values in a local `production.yaml` file.
 
-The Nomad cluster is specified via the `$NOMAD_ADDR` environment variable.
+```
+NAME:
+   nomad-helper scale-import - Import nomad job scale config from a local file to Nomad cluster
+
+USAGE:
+   nomad-helper scale-import [arguments...]
+```
 
 ## Example Scale config
 

@@ -5,10 +5,10 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/hashicorp/nomad/api"
 	"github.com/seatgeek/nomad-helper/nomad"
 	"github.com/seatgeek/nomad-helper/structs"
+	log "github.com/sirupsen/logrus"
 )
 
 func ImportCommand(file string) error {

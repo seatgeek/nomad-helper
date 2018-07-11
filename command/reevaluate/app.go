@@ -1,9 +1,9 @@
 package reevaluate
 
 import (
-	log "github.com/Sirupsen/logrus"
 	"github.com/hashicorp/nomad/api"
 	"github.com/seatgeek/nomad-helper/nomad"
+	log "github.com/sirupsen/logrus"
 )
 
 func App() error {

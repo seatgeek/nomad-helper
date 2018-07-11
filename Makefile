@@ -11,12 +11,12 @@ $(BUILD_DIR):
 
 .PHONY: install
 install:
-	go get github.com/kardianos/govendor
-	govendor sync
+	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+	dep ensure
 
 .PHONY: build
 build: install
-	govendor sync
+	dep ensure
 	go install
 
 .PHONY: fmt
@@ -43,7 +43,7 @@ vet: fmt
 BINARIES = $(addprefix $(BUILD_DIR)/nomad-helper-, $(GOBUILD))
 $(BINARIES): $(BUILD_DIR)/nomad-helper-%: $(BUILD_DIR)
 	@echo "=> building $@ ..."
-	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 govendor build -o $@
+	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 go build -o $@
 
 .PHONY: dist
 dist: install fmt vet
