@@ -3,37 +3,37 @@
 <!-- TOC -->
 
 - [nomad-helper](#nomad-helper)
-    - [Running](#running)
-    - [Requirements](#requirements)
-    - [Building](#building)
-    - [Configuration](#configuration)
-    - [Usage](#usage)
-        - [node](#node)
-            - [drain](#drain)
-            - [eligibility](#eligibility)
-        - [reevaluate-all](#reevaluate-all)
-        - [gc](#gc)
-        - [scale](#scale)
-            - [export](#export)
-            - [import](#import)
-    - [Example Scale config](#example-scale-config)
+- [Running](#running)
+- [Requirements](#requirements)
+- [Building](#building)
+- [Configuration](#configuration)
+- [Usage](#usage)
+    - [node](#node)
+        - [drain](#drain)
+        - [eligibility](#eligibility)
+    - [reevaluate-all](#reevaluate-all)
+    - [gc](#gc)
+    - [scale](#scale)
+        - [export](#export)
+        - [import](#import)
+        - [Example Scale config](#example-scale-config)
 
 <!-- /TOC -->
 
 `nomad-helper` is a tool meant to enable teams to quickly onboard themselves with nomad, by exposing scaling functionality in a simple to use and share yaml format.
 
-## Running
+# Running
 
 The project got build artifacts for linux, darwin and windows in the [GitHub releases tab](https://github.com/seatgeek/nomad-helper/releases).
 
 A docker container is also provided at [seatgeek/nomad-helper](https://hub.docker.com/r/seatgeek/nomad-helper/tags/)
 
-## Requirements
+# Requirements
 
 - Go 1.10
 - govender https://github.com/kardianos/govendor/
 
-## Building
+# Building
 
 To build a binary, run the following
 
@@ -50,17 +50,17 @@ make build
 
 This will create a `nomad-helper` binary in your `$GOPATH/bin` directory.
 
-## Configuration
+# Configuration
 
 Any `NOMAD_*` env that the native `nomad` CLI tool supports are supported by this tool.
 
 The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 
-## Usage
+# Usage
 
 The `nomad-helper` binary has several helper subcommands.
 
-### node
+## node
 
 node specific commands that act on all Nomad clients that match the filters provided, rather than a single node
 
@@ -84,7 +84,7 @@ OPTIONS:
    --help, -h                    show help
 ```
 
-#### drain
+### drain
 
 Filtering options can be found in the main `node` command help above
 
@@ -104,7 +104,7 @@ OPTIONS:
    --keep-ineligible  Keep ineligible will maintain the node's scheduling ineligibility even if the drain is being disabled. This is useful when an existing drain is being cancelled but additional scheduling on the node is not desired.
 ```
 
-#### eligibility
+### eligibility
 
 Filtering options can be found in the main `node` command help above
 
@@ -120,7 +120,7 @@ OPTIONS:
    --disable  Disable scheduling eligibility
 ```
 
-### reevaluate-all
+## reevaluate-all
 
 ```
 NAME:
@@ -130,7 +130,7 @@ USAGE:
    nomad-helper reevaluate-all [arguments...]
 ```
 
-### gc
+## gc
 
 ```
 NAME:
@@ -140,7 +140,7 @@ USAGE:
    nomad-helper gc [arguments...]
 ```
 
-### scale
+## scale
 
 ```
 NAME:
@@ -157,7 +157,7 @@ OPTIONS:
    --help, -h  show help
 ```
 
-#### export
+### export
 
 `nomad-helper scale-export production.yml` will read the Nomad cluster `job  + group + count` values and write them to a local `production.yml` file.
 
@@ -169,7 +169,7 @@ USAGE:
    nomad-helper scale export [arguments...]
 ```
 
-#### import
+### import
 
 `nomad-helper scale-import production.yml` will update the Nomad cluster `job + group + count` values according to the values in a local `production.yaml` file.
 
@@ -181,7 +181,7 @@ USAGE:
    nomad-helper scale import [arguments...]
 ```
 
-## Example Scale config
+### Example Scale config
 
 ```yml
 info:
