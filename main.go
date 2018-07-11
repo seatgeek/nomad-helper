@@ -6,11 +6,12 @@ import (
 	"sort"
 	"time"
 
-	"github.com/seatgeek/nomad-helper/command/firehose"
+	"github.com/seatgeek/nomad-helper/command/attach"
 	"github.com/seatgeek/nomad-helper/command/gc"
 	"github.com/seatgeek/nomad-helper/command/node"
 	"github.com/seatgeek/nomad-helper/command/reevaluate"
 	"github.com/seatgeek/nomad-helper/command/scale"
+	"github.com/seatgeek/nomad-helper/command/tail"
 	log "github.com/sirupsen/logrus"
 	cli "gopkg.in/urfave/cli.v1"
 )
@@ -18,7 +19,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "nomad-helper"
-	app.Usage = "easily restore / snapshot your nomad job scale config"
+	app.Usage = "Useful utilties for working with Nomad at scale"
 	app.Version = "1.0"
 
 	app.Flags = []cli.Flag{
@@ -30,6 +31,75 @@ func main() {
 		},
 	}
 	app.Commands = []cli.Command{
+		{
+			Name:  "attach",
+			Usage: "attach to a specific allocation",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "job",
+					Usage: "List allocations for the job and attach to the selected allocation",
+				},
+				cli.StringFlag{
+					Name:  "alloc",
+					Usage: "Partial UUID or the full 36 char UUID to attach to",
+				},
+				cli.StringFlag{
+					Name:  "task",
+					Usage: "Task name to auto-select if the allocation has multiple tasks in the allocation group",
+				},
+				cli.BoolFlag{
+					Name:  "host",
+					Usage: "Connect to the host directly instead of attaching to a container",
+				},
+				cli.StringFlag{
+					Name:  "command",
+					Value: "bash",
+					Usage: "Command to run when attaching to the container",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if err := attach.Run(c); err != nil {
+					log.Fatal(err)
+					return err
+				}
+
+				return nil
+			},
+		},
+		{
+			Name:  "tail",
+			Usage: "tail stdout/stderr from nomad alloc",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "job",
+					Usage: "(optional) list allocations for the job and attach to the selected allocation",
+				},
+				cli.StringFlag{
+					Name:  "alloc",
+					Usage: "(optional) partial UUID or the full 36 char UUID to attach to",
+				},
+				cli.StringFlag{
+					Name:  "task",
+					Usage: "(optional) the task name to auto-select if the allocation has multiple tasks in the allocation group",
+				},
+				cli.BoolTFlag{
+					Name:  "stderr",
+					Usage: "(optional, default: true) tail stderr from nomad",
+				},
+				cli.BoolTFlag{
+					Name:  "stdout",
+					Usage: "(optional, default: true) tail stdout from nomad",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if err := tail.Run(c); err != nil {
+					log.Fatal(err)
+					return err
+				}
+
+				return nil
+			},
+		},
 		{
 			Name:  "node",
 			Usage: "node specific commands that act on all Nomad clients that match the filters provided, rather than a single node",
@@ -133,27 +203,32 @@ func main() {
 			},
 		},
 		{
-			Name:  "scale-export",
-			Usage: "Export nomad job scale config to a local file",
-			Action: func(c *cli.Context) error {
-				configFile := c.Args().Get(0)
-				if configFile == "" {
-					return fmt.Errorf("Missing file name")
-				}
+			Name:  "scale",
+			Usage: "Import / Export job -> group -> count values",
+			Subcommands: []cli.Command{
+				{
+					Name: "export",
+					Action: func(c *cli.Context) error {
+						configFile := c.Args().Get(0)
+						if configFile == "" {
+							return fmt.Errorf("Missing file name")
+						}
 
-				return scale.ExportCommand(configFile)
-			},
-		},
-		{
-			Name:  "scale-import",
-			Usage: "Import nomad job scale config from a local file to Nomad cluster",
-			Action: func(c *cli.Context) error {
-				configFile := c.Args().Get(0)
-				if configFile == "" {
-					return fmt.Errorf("Missing file name")
-				}
+						return scale.ExportCommand(configFile)
+					},
+				},
+				{
+					Name:  "import",
+					Usage: "Import nomad job scale config from a local file to Nomad cluster",
+					Action: func(c *cli.Context) error {
+						configFile := c.Args().Get(0)
+						if configFile == "" {
+							return fmt.Errorf("Missing file name")
+						}
 
-				return scale.ImportCommand(configFile)
+						return scale.ImportCommand(configFile)
+					},
+				},
 			},
 		},
 		{
@@ -170,13 +245,6 @@ func main() {
 				return gc.App()
 			},
 		},
-		{
-			Name:  "firehose",
-			Usage: "Firehose emit cluster changes",
-			Action: func(c *cli.Context) error {
-				return firehose.App()
-			},
-		},
 	}
 	app.Before = func(c *cli.Context) error {
 		// convert the human passed log level into logrus levels
@@ -190,5 +258,6 @@ func main() {
 	}
 
 	sort.Sort(cli.FlagsByName(app.Flags))
+	sort.Sort(cli.CommandsByName(app.Commands))
 	app.Run(os.Args)
 }

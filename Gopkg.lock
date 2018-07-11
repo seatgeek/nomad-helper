@@ -2,10 +2,62 @@
 
 
 [[projects]]
+  name = "github.com/alecthomas/chroma"
+  packages = [
+    ".",
+    "formatters",
+    "formatters/html",
+    "lexers",
+    "lexers/a",
+    "lexers/b",
+    "lexers/c",
+    "lexers/d",
+    "lexers/e",
+    "lexers/f",
+    "lexers/g",
+    "lexers/h",
+    "lexers/i",
+    "lexers/internal",
+    "lexers/j",
+    "lexers/k",
+    "lexers/l",
+    "lexers/m",
+    "lexers/n",
+    "lexers/o",
+    "lexers/p",
+    "lexers/q",
+    "lexers/r",
+    "lexers/s",
+    "lexers/t",
+    "lexers/v",
+    "lexers/w",
+    "lexers/x",
+    "lexers/y",
+    "styles"
+  ]
+  revision = "3020e2ea8c6b1a9c2336022d847c4392c3997f02"
+  version = "v0.4.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/armon/go-metrics"
   packages = ["."]
   revision = "58588f401c2cc130a7308a52ca3bc6c0a76db04b"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/danwakefield/fnmatch"
+  packages = ["."]
+  revision = "cbb64ac3d964b81592e64f957ad53df015803288"
+
+[[projects]]
+  name = "github.com/dlclark/regexp2"
+  packages = [
+    ".",
+    "syntax"
+  ]
+  revision = "487489b64fb796de2e55f4e8a4ad1e145f80e957"
+  version = "v1.1.6"
 
 [[projects]]
   name = "github.com/gorhill/cronexpr"
@@ -115,6 +167,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/mitchellh/colorstring"
+  packages = ["."]
+  revision = "8631ce90f28644f54aeedcb3e389a85174e067d1"
+
+[[projects]]
+  branch = "master"
   name = "github.com/mitchellh/copystructure"
   packages = ["."]
   revision = "d23ffcb85de31694d6ccaa23ccb4a03e55c1303f"
@@ -188,6 +246,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "34cd677c56a1c366f91c96cd09c2d9819e8d1ee294963ca53a3dc2b7e4125daa"
+  inputs-digest = "d06a33fe0a93bda5ef7863c6477d42974ff70070b1a938a51a36db907efc237f"
   solver-name = "gps-cdcl"
   solver-version = 1
