@@ -11,12 +11,12 @@
     - [node](#node)
         - [drain](#drain)
         - [eligibility](#eligibility)
-    - [reevaluate-all](#reevaluate-all)
-    - [gc](#gc)
     - [scale](#scale)
         - [export](#export)
         - [import](#import)
         - [Example Scale config](#example-scale-config)
+    - [reevaluate-all](#reevaluate-all)
+    - [gc](#gc)
 
 <!-- /TOC -->
 
@@ -120,26 +120,6 @@ OPTIONS:
    --disable  Disable scheduling eligibility
 ```
 
-## reevaluate-all
-
-```
-NAME:
-   nomad-helper reevaluate-all - Force re-evaluate all jobs
-
-USAGE:
-   nomad-helper reevaluate-all [arguments...]
-```
-
-## gc
-
-```
-NAME:
-   nomad-helper gc - Force a cluster GC
-
-USAGE:
-   nomad-helper gc [arguments...]
-```
-
 ## scale
 
 ```
@@ -195,4 +175,25 @@ jobs:
     api-es-1: 1
     api-es-2: 1
     api-es-3: 1
+```
+
+
+## reevaluate-all
+
+```
+NAME:
+   nomad-helper reevaluate-all - Force re-evaluate all jobs
+
+USAGE:
+   nomad-helper reevaluate-all [arguments...]
+```
+
+## gc
+
+```
+NAME:
+   nomad-helper gc - Force a cluster GC
+
+USAGE:
+   nomad-helper gc [arguments...]
 ```
