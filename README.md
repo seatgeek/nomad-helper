@@ -12,6 +12,7 @@
     - [Source](#source)
 - [Usage](#usage)
     - [attach](#attach)
+    - [tail](#tail)
     - [node](#node)
         - [Filter examples](#filter-examples)
         - [drain](#drain)
@@ -100,6 +101,25 @@ OPTIONS:
    --task value     Task name to auto-select if the allocation has multiple tasks in the allocation group
    --host           Connect to the host directly instead of attaching to a container
    --command value  Command to run when attaching to the container (default: "bash")
+```
+
+## tail
+
+Automatically handle discovery of allocation and tail both `stdout` and `stdout` at the same time
+
+```
+NAME:
+   nomad-helper tail - tail stdout/stderr from nomad alloc
+
+USAGE:
+   nomad-helper tail [command options] [arguments...]
+
+OPTIONS:
+   --job value    (optional) list allocations for the job and attach to the selected allocation
+   --alloc value  (optional) partial UUID or the full 36 char UUID to attach to
+   --task value   (optional) the task name to auto-select if the allocation has multiple tasks in the allocation group
+   --stderr       (optional, default: true) tail stderr from nomad
+   --stdout       (optional, default: true) tail stdout from nomad
 ```
 
 ## node
