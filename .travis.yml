@@ -31,8 +31,7 @@ after_success:
 
 deploy:
   provider: releases
-  api_key:
-    secure: "An5zZP1b6D10TrQAKSq1wN97S0bLlUDPJ8sEUEk0UB1IQJVhY7wdOT+26eFZdb3Li3Ikgr7l3lhl4GTxjMCmVPwtl39TbKQoOQc7Qz6NEOLOsU8Q7CISEJ+y181HQsUCUn+8YbGh9k+V82IoLIP7D8LCWvtYawB+r+jHiyOBCDmqMEBZ4v1VKUdKm9WcosSYspxjuX3X9j9w3592zLmM7EZpjzBN6yQFXpwaH3BM0jP2lVNr6rMZ8EYZOO3ipngqO5Eixg/4Nd1BZTIAR2+K7gjbDsuzB20PiFBLqFkAXRf5rQpqPAjApTf4KTjCy6tEv7MvWTbr6t7bgDGzDKeGO4goq0Gr4l1fydYOB1qpx/5Az1IqXqaEdHyqWoQ5dTEBUsBuC8ryDXKXqlSeuLR4/7Gy4g1Qd5rNzXM4twLT+BdBO8h3Ev2heQmZPmE/NjLdtc1l2te4UlU1M1bb9Mi6GQv3+s9AatoeftcE6OQLdKIppD8nOPzRNsaO9bTJ6VPvDginlKLuB7fXC1pFuzIZBH3qf9LQBGkV2Z6PgmosOb++6qc19zrlhXzyMC2gzVRSr26uiBjVbSWfcxbx2sr3ydzgrzwYv/j0PLJt+3Qvav7UmK1gYpv+Vyt20NSgoDrZU/3li7m+GSqDDx4HeO0IgEc3Le97WI2VBNhsUtsDTJY="
+  api_key: "${GITHUB_TOKEN}"
   file:
     - build/nomad-helper-linux-amd64
     - build/nomad-helper-windows-amd64
