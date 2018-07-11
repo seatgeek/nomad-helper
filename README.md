@@ -8,6 +8,7 @@
 - [Building](#building)
 - [Configuration](#configuration)
 - [Usage](#usage)
+    - [attach](#attach)
     - [node](#node)
         - [Filter examples](#filter-examples)
         - [drain](#drain)
@@ -62,6 +63,27 @@ The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 # Usage
 
 The `nomad-helper` binary has several helper subcommands.
+
+## attach
+
+Automatically handle discovery of allocation host IP by CLI filters or interactive shell and ssh + attach to the running container.
+
+The tool assume you can SSH to the instance and your `~/.ssh/config` is configured with the right configuration for doing so.
+
+```
+NAME:
+   nomad-helper attach - attach to a specific allocation
+
+USAGE:
+   nomad-helper attach [command options] [arguments...]
+
+OPTIONS:
+   --job value      List allocations for the job and attach to the selected allocation
+   --alloc value    Partial UUID or the full 36 char UUID to attach to
+   --task value     Task name to auto-select if the allocation has multiple tasks in the allocation group
+   --host           Connect to the host directly instead of attaching to a container
+   --command value  Command to run when attaching to the container (default: "bash")
+```
 
 ## node
 
