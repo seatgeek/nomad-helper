@@ -18,7 +18,7 @@ env:
     - GOBUILD="linux-amd64 windows-amd64 darwin-amd64"
 
 script:
-  - GOBUILD=${GOBUILD} make -j dist
+  - make -j dist
   - ls -la build
 
 after_success:
@@ -32,7 +32,7 @@ after_success:
 deploy:
   provider: releases
   api_key:
-    secure: wppJrnbyESDdsWoQ7Nq8M5o3cKIa9oU/EhCdNDgFZ3smgJI4gMSNYz3Th4atvtMr4VJxAyuQznBEWQ+ZRQIvTah+5kZ9gH70ccv9ZqdjNz3BBUcigimPu1BDDvdOCuBc2kqd2RXVtrQ2LlwW7iNM77ziQFMD6YvHGPqeTXOexagh8jFcGum9W+v7O59in5agBO/mP0Bi1+JQg5OLrmhT58d8OS7J9Z22jNhTrOsbQzPJhmE6Da/l8XAJGNRkYFwzySI3hGHe+MepyQj5bD2LPI0cFmMLqqb7c+B6X+JYWokArIpNL1a7bWyrOO0ZuuHRO58ii3uwWnzPsb9XTVHVCzX9VsJT2B3GIRxWrgpzlakuCLD7YIzXzsgCfPjQGGQPiCFDVfhx++bcpMedh3SJ2FezazQlEH4TKTrSJUZProIzwLHbZBRaOtnoinBgC7R2iskf652O33/aQw5/cEWmzxc0iEOyGwhet0xnNrg86vzYb/a1JiGVWJ0wJctt2Diz3k0OjZEIY7sJ/hCplsUVnh/Y7ky234MYHFQFqrDBWBzxbZYvP+hYfQ3u2v7eS4kyA3qKad3lPD1DgwAt67DiB+TpDNber+N812mpKUsJl1pTVljpEoSpGZOhOf/6xwE2UXfnqtp3XkAam/NOec1HddR8pSLEu2rzDccpPent/vU=
+    secure: Dh49tgOOg22D1K6y/E1z9YTaCn4jUr3ntY1QwKyLSPP7NBXzWDAGONpwYZOed+SXxiT7+1LHx3mvH3e0NdtllAXZO7H3jHtRbmbr7yx/MqqFy1w67Mj9g1ydgdKC2kK7DCo5lGmAdsMAHJs6AaHFMFVtLfQLw9DK3ocfH8cyobUfNLBQdsTgbuN24XIktRAs54hKHZ2r0oFYelVlhOLSMEWWBRzdYJ4kRNzBW5TMrhZy0ZDEHSH+K0ursHRRyTYjqBe6v+fWOVkNmKac4hjXuzDrX8FjS3Y5rd5yJTa1Gs71J6ZlRfr817zR0uanvm9R4kI1giKi6Ui+Rjrmohe63veMJ5bu7wG36w4TFz8NErCMqpTjfqrx+Byvs3q5TlvCgRI6HKzUo7AksmMa6RbVzD3OGpTOJZXcf0mlI3Iu/rN65uX0T+VoBtwESArE/O3E2+qNyqUFC1eWQgV3PqjvUsWMBW9pAn3fwRiTmcz7ZTwq9PLI3cbxpQ2Vmrcdp3vc2mwPMgy6s+fO76TfyMr218rE9RxOJLqzYOnbtnacU6ocoOnyEcSEyMnI2tC+ojh4rZPx0qvDmIfcBMDK5hXwyzIjfzzodZpotUZ6huiu89RbuRF7cZKdcueWsHmd7CEEpBjsKpbfoAdswAujLwpGB1TVdRFLxkoSD4QwCxcGuRQ=
   file:
     - build/nomad-helper-linux-amd64
     - build/nomad-helper-windows-amd64
