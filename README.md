@@ -86,6 +86,8 @@ OPTIONS:
 
 #### drain
 
+Filtering options can be found in the main `node` command help above
+
 ```
 USAGE:
    nomad-helper node [filter options] drain [command options] [arguments...]
@@ -103,6 +105,8 @@ OPTIONS:
 ```
 
 #### eligibility
+
+Filtering options can be found in the main `node` command help above
 
 ```
 NAME:
