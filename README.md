@@ -7,6 +7,9 @@
 - [Requirements](#requirements)
 - [Building](#building)
 - [Configuration](#configuration)
+- [Installation](#installation)
+    - [Binary](#binary)
+    - [Source](#source)
 - [Usage](#usage)
     - [attach](#attach)
     - [node](#node)
@@ -59,6 +62,20 @@ This will create a `nomad-helper` binary in your `$GOPATH/bin` directory.
 Any `NOMAD_*` env that the native `nomad` CLI tool supports are supported by this tool.
 
 The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
+
+# Installation
+
+## Binary
+
+- Download the binary from [the release page](https://github.com/seatgeek/nomad-helper)
+- Use docker (`seatgeek/nomad-helper`)
+
+## Source
+
+- make sure Go 1.10+ is installed (`brew install go`)
+- clone the repo into `$GOPATH/src/github.com/seatgeek/nomad-helper`
+- make install
+- `go install` / `go build` / `make build`
 
 # Usage
 
