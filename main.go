@@ -207,7 +207,8 @@ func main() {
 			Usage: "Import / Export job -> group -> count values",
 			Subcommands: []cli.Command{
 				{
-					Name: "export",
+					Name:  "export",
+					Usage: "Export nomad job scale config to a local file from Nomad cluster",
 					Action: func(c *cli.Context) error {
 						configFile := c.Args().Get(0)
 						if configFile == "" {

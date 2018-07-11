@@ -13,8 +13,9 @@
             - [eligibility](#eligibility)
         - [`reevaluate-all`](#reevaluate-all)
         - [`gc`](#gc)
-        - [`scale-export`](#scale-export)
-        - [`scale-import`](#scale-import)
+        - [`scale`](#scale)
+            - [export](#export)
+            - [`import`](#import)
     - [Example Scale config](#example-scale-config)
 
 <!-- /TOC -->
@@ -135,28 +136,45 @@ USAGE:
    nomad-helper gc [arguments...]
 ```
 
-### `scale-export`
+### `scale`
+
+```
+NAME:
+   nomad-helper scale - Import / Export job -> group -> count values
+
+USAGE:
+   nomad-helper scale command [command options] [arguments...]
+
+COMMANDS:
+     export  Export nomad job scale config to a local file from Nomad cluster
+     import  Import nomad job scale config from a local file to Nomad cluster
+
+OPTIONS:
+   --help, -h  show help
+```
+
+#### export
 
 `nomad-helper scale-export production.yml` will read the Nomad cluster `job  + group + count` values and write them to a local `production.yml` file.
 
 ```
 NAME:
-   nomad-helper scale-export - Export nomad job scale config to a local file
+   nomad-helper scale export - Export nomad job scale config to a local file from Nomad cluster
 
 USAGE:
-   nomad-helper scale-export [arguments...]
+   nomad-helper scale export [arguments...]
 ```
 
-### `scale-import`
+#### `import`
 
 `nomad-helper scale-import production.yml` will update the Nomad cluster `job + group + count` values according to the values in a local `production.yaml` file.
 
 ```
 NAME:
-   nomad-helper scale-import - Import nomad job scale config from a local file to Nomad cluster
+   nomad-helper scale import - Import nomad job scale config from a local file to Nomad cluster
 
 USAGE:
-   nomad-helper scale-import [arguments...]
+   nomad-helper scale import [arguments...]
 ```
 
 ## Example Scale config
