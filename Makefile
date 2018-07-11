@@ -53,7 +53,7 @@ dist: install fmt vet
 .PHONY: docker
 docker:
 	@echo "=> build and push Docker image ..."
-	@echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+	@echo "$DOCKER_PASS" | docker login -u "$DOCKER_USERNAME" --password-stdin
 	docker build -f Dockerfile -t seatgeek/nomad-helper:$(COMMIT) .
 	docker tag seatgeek/nomad-helper:$(COMMIT) seatgeek/nomad-helper:$(TAG)
 	docker push seatgeek/nomad-helper:$(TAG)
