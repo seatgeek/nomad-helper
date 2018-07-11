@@ -9,8 +9,11 @@
 - [Configuration](#configuration)
 - [Usage](#usage)
     - [node](#node)
+        - [Filter examples](#filter-examples)
         - [drain](#drain)
+            - [Examples](#examples)
         - [eligibility](#eligibility)
+            - [Examples](#examples-1)
     - [scale](#scale)
         - [export](#export)
         - [import](#import)
@@ -85,6 +88,11 @@ OPTIONS:
    --help, -h                                                 show help
 ```
 
+### Filter examples
+
+- `nomad-helper node --filter-meta 'aws.instance.availability-zone=us-east-1e'  --filter-attribute 'driver.docker.version=17.09.0-ce' <command> <args>`
+- `nomad-helper node --noop --filter-meta 'aws.instance.availability-zone=us-east-1e'  --filter-attribute 'driver.docker.version=17.09.0-ce' <command> <args>`
+
 ### drain
 
 Filtering options can be found in the main `node` command help above
@@ -105,6 +113,11 @@ OPTIONS:
    --keep-ineligible  Keep ineligible will maintain the node's scheduling ineligibility even if the drain is being disabled. This is useful when an existing drain is being cancelled but additional scheduling on the node is not desired.
 ```
 
+#### Examples
+
+- `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' drain --enable`
+- `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' drain --noop --enable`
+
 ### eligibility
 
 Filtering options can be found in the main `node` command help above
@@ -120,6 +133,11 @@ OPTIONS:
    --enable   Enable scheduling eligbility
    --disable  Disable scheduling eligibility
 ```
+
+#### Examples
+
+- `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' eligibility --enable`
+- `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' eligibility --noop --enable`
 
 ## scale
 
