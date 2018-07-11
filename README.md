@@ -11,11 +11,11 @@
         - [node](#node)
             - [drain](#drain)
             - [eligibility](#eligibility)
-        - [`reevaluate-all`](#reevaluate-all)
-        - [`gc`](#gc)
-        - [`scale`](#scale)
+        - [reevaluate-all](#reevaluate-all)
+        - [gc](#gc)
+        - [scale](#scale)
             - [export](#export)
-            - [`import`](#import)
+            - [import](#import)
     - [Example Scale config](#example-scale-config)
 
 <!-- /TOC -->
@@ -116,7 +116,7 @@ OPTIONS:
    --disable  Disable scheduling eligibility
 ```
 
-### `reevaluate-all`
+### reevaluate-all
 
 ```
 NAME:
@@ -126,7 +126,7 @@ USAGE:
    nomad-helper reevaluate-all [arguments...]
 ```
 
-### `gc`
+### gc
 
 ```
 NAME:
@@ -136,7 +136,7 @@ USAGE:
    nomad-helper gc [arguments...]
 ```
 
-### `scale`
+### scale
 
 ```
 NAME:
@@ -165,7 +165,7 @@ USAGE:
    nomad-helper scale export [arguments...]
 ```
 
-#### `import`
+#### import
 
 `nomad-helper scale-import production.yml` will update the Nomad cluster `job + group + count` values according to the values in a local `production.yaml` file.
 
