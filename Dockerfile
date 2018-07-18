@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.8
 
 # we need ca-certificates for any external https communication
 RUN apk --update upgrade && \
