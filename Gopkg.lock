@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/Jeffail/tunny"
+  packages = ["."]
+  revision = "59cfa8fcb19f5acba8db07a0dd3cb2fa7edbc228"
+  version = "0.1.1"
+
+[[projects]]
   name = "github.com/alecthomas/chroma"
   packages = [
     ".",
@@ -166,6 +172,12 @@
   version = "v0.8.1"
 
 [[projects]]
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
+  version = "v0.0.2"
+
+[[projects]]
   branch = "master"
   name = "github.com/mitchellh/colorstring"
   packages = ["."]
@@ -200,6 +212,12 @@
   name = "github.com/mitchellh/reflectwalk"
   packages = ["."]
   revision = "63d60e9d0dbc60cf9164e6510889b0db6683d98c"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/olekukonko/tablewriter"
+  packages = ["."]
+  revision = "d4647c9c7a84d847478d890b816b7d8b62b0b279"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -246,6 +264,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d06a33fe0a93bda5ef7863c6477d42974ff70070b1a938a51a36db907efc237f"
+  inputs-digest = "523f588f772fb9dede0ec776e529bc365a5dfae722c88aac8cdac6c387e81db8"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -11,6 +11,7 @@ import (
 	"github.com/seatgeek/nomad-helper/command/node"
 	"github.com/seatgeek/nomad-helper/command/reevaluate"
 	"github.com/seatgeek/nomad-helper/command/scale"
+	"github.com/seatgeek/nomad-helper/command/stats"
 	"github.com/seatgeek/nomad-helper/command/tail"
 	log "github.com/sirupsen/logrus"
 	cli "gopkg.in/urfave/cli.v1"
@@ -234,6 +235,21 @@ func main() {
 						return scale.ImportCommand(configFile)
 					},
 				},
+			},
+		},
+		{
+			Name:  "stats",
+			Usage: "Get cluster stats",
+			Flags: []cli.Flag{
+				cli.StringSliceFlag{
+					Name: "dimension",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if err := stats.Run(c); err != nil {
+					panic(err)
+				}
+				return nil
 			},
 		},
 		{

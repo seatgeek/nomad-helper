@@ -26,10 +26,6 @@
 
 
 [[constraint]]
-  name = "github.com/hashicorp/consul"
-  version = "1.2.0"
-
-[[constraint]]
   name = "github.com/hashicorp/nomad"
   version = "0.8.4"
 
