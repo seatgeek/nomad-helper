@@ -207,6 +207,9 @@ func (r reader) read(node detailedNode) []string {
 		case "NodeClass", "class":
 			s = append(s, node.node.NodeClass)
 
+		case "Name", "name":
+			s = append(s, node.node.Name)
+
 		case "Datacenter", "dc":
 			s = append(s, node.node.Datacenter)
 
