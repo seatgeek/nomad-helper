@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/nomad/api"
+	"github.com/schollz/progressbar"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -14,9 +15,18 @@ var (
 )
 
 func filter(client *api.Client, c *cli.Context) ([]*api.NodeListStub, error) {
+	log.Info("Finding legible nodes")
 	nodes, _, err := client.Nodes().List(&api.QueryOptions{Prefix: c.String("filter-prefix")})
 	if err != nil {
 		return nil, err
+	}
+
+	bar := progressbar.New(len(nodes))
+	if !c.Bool("no-progress") {
+		bar.RenderBlank()
+		defer func() {
+			bar.Finish()
+		}()
 	}
 
 	matches := make([]*api.NodeListStub, 0)
@@ -24,19 +34,19 @@ func filter(client *api.Client, c *cli.Context) ([]*api.NodeListStub, error) {
 		// only consider nodes that is ready
 		if node.Status != "ready" {
 			log.Debugf("Node %s is not in status=ready (%s)", node.Name, node.Status)
-			continue
+			goto NEXT_NODE
 		}
 
 		// only consider nodes with the right node class
 		if class := c.String("filter-class"); class != "" && node.NodeClass != class {
 			log.Debugf("Node %s class '%s' do not match expected value '%s'", node.Name, node.NodeClass, class)
-			continue
+			goto NEXT_NODE
 		}
 
 		// only consider nodes with the right nomad version
 		if version := c.String("filter-version"); version != "" && node.Version != version {
 			log.Debugf("Node %s version '%s' do not match expected node version '%s'", node.Name, node.Version, version)
-			continue
+			goto NEXT_NODE
 		}
 
 		// filter by client meta keys
@@ -76,20 +86,27 @@ func filter(client *api.Client, c *cli.Context) ([]*api.NodeListStub, error) {
 		// continue to furhter processing
 		log.Debugf("Node %s passed all all filters", node.Name)
 		matches = append(matches, node)
-
-		// noop mode should just print the nodes right away
-		if c.Bool("noop") {
-			log.Infof("Node %s matched!", node.Name)
-		}
+		goto NEXT_NODE
 
 	NEXT_NODE:
+		if !c.Bool("no-progress") {
+			bar.Add(1)
+		}
 		continue
+	}
+
+	if !c.Bool("no-progress") {
+		bar.Finish()
+		fmt.Println()
 	}
 
 	log.Infof("Found %d matched nodes", len(matches))
 
 	// noop mode will fail the matching to prevent any further processing
-	if c.Bool("noop") {
+	if c.BoolT("noop") {
+		for _, node := range matches {
+			log.Infof("Node %s matched!", node.Name)
+		}
 		return nil, fmt.Errorf("noop mode, aborting")
 	}
 

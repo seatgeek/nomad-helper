@@ -172,6 +172,10 @@ func main() {
 							Name:  "keep-ineligible",
 							Usage: "Keep ineligible will maintain the node's scheduling ineligibility even if the drain is being disabled. This is useful when an existing drain is being cancelled but additional scheduling on the node is not desired.",
 						},
+						cli.BoolFlag{
+							Name:  "no-progress",
+							Usage: "Do not show progress bar",
+						},
 					},
 					Action: func(c *cli.Context) error {
 						if err := node.Drain(c); err != nil {

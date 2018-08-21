@@ -220,6 +220,12 @@
   revision = "d4647c9c7a84d847478d890b816b7d8b62b0b279"
 
 [[projects]]
+  name = "github.com/schollz/progressbar"
+  packages = ["."]
+  revision = "f3123fe107eecd65b8eb2f5b42c2b2209046e07c"
+  version = "v2.5.0"
+
+[[projects]]
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
@@ -264,6 +270,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "523f588f772fb9dede0ec776e529bc365a5dfae722c88aac8cdac6c387e81db8"
+  inputs-digest = "b0ea207cc23df0f0d6d585af182f0b5e9bda2f12683db6932989edcc73f4463f"
   solver-name = "gps-cdcl"
   solver-version = 1
