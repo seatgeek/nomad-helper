@@ -42,6 +42,10 @@ var filterFlags = []cli.Flag{
 		Name:  "noop",
 		Usage: "Only output nodes that would be drained, don't do any modifications",
 	},
+	cli.BoolFlag{
+		Name:  "no-progress",
+		Usage: "Do not show progress bar",
+	},
 }
 
 func main() {
