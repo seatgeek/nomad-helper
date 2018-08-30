@@ -17,6 +17,33 @@ import (
 	cli "gopkg.in/urfave/cli.v1"
 )
 
+var filterFlags = []cli.Flag{
+	cli.StringFlag{
+		Name:  "filter-prefix",
+		Usage: "Filter nodes by their ID with prefix matching `ef30d57c`",
+	},
+	cli.StringFlag{
+		Name:  "filter-class",
+		Usage: "Filter nodes by their node class `batch-jobs`",
+	},
+	cli.StringFlag{
+		Name:  "filter-version",
+		Usage: "Filter nodes by their Nomad version `0.8.4`",
+	},
+	cli.StringSliceFlag{
+		Name:  "filter-meta",
+		Usage: "Filter nodes by their meta key/value like `'aws.instance.availability-zone=us-east-1e'`. Can be provided multiple times.",
+	},
+	cli.StringSliceFlag{
+		Name:  "filter-attribute",
+		Usage: "Filter nodes by their attribute key/value like `'driver.docker.version=17.09.0-ce'`. Can be provided multiple times.",
+	},
+	cli.BoolFlag{
+		Name:  "noop",
+		Usage: "Only output nodes that would be drained, don't do any modifications",
+	},
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "nomad-helper"
@@ -104,32 +131,7 @@ func main() {
 		{
 			Name:  "node",
 			Usage: "node specific commands that act on all Nomad clients that match the filters provided, rather than a single node",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "filter-prefix",
-					Usage: "Filter nodes by their ID with prefix matching `ef30d57c`",
-				},
-				cli.StringFlag{
-					Name:  "filter-class",
-					Usage: "Filter nodes by their node class `batch-jobs`",
-				},
-				cli.StringFlag{
-					Name:  "filter-version",
-					Usage: "Filter nodes by their Nomad version `0.8.4`",
-				},
-				cli.StringSliceFlag{
-					Name:  "filter-meta",
-					Usage: "Filter nodes by their meta key/value like `'aws.instance.availability-zone=us-east-1e'`. Can be provided multiple times.",
-				},
-				cli.StringSliceFlag{
-					Name:  "filter-attribute",
-					Usage: "Filter nodes by their attribute key/value like `'driver.docker.version=17.09.0-ce'`. Can be provided multiple times.",
-				},
-				cli.BoolFlag{
-					Name:  "noop",
-					Usage: "Only output nodes that would be drained, don't do any modifications",
-				},
-			},
+			Flags: filterFlags,
 			Subcommands: []cli.Command{
 				{
 					Name:  "drain",
@@ -244,11 +246,11 @@ func main() {
 		{
 			Name:  "stats",
 			Usage: "Get cluster stats",
-			Flags: []cli.Flag{
+			Flags: append(filterFlags,
 				cli.StringSliceFlag{
 					Name: "dimension",
 				},
-			},
+			),
 			Action: func(c *cli.Context) error {
 				if err := stats.Run(c); err != nil {
 					panic(err)

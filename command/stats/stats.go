@@ -11,6 +11,7 @@ import (
 	"github.com/Jeffail/tunny"
 	"github.com/hashicorp/nomad/api"
 	"github.com/olekukonko/tablewriter"
+	"github.com/seatgeek/nomad-helper/helpers"
 	log "github.com/sirupsen/logrus"
 	cli "gopkg.in/urfave/cli.v1"
 )
@@ -31,7 +32,7 @@ func Run(c *cli.Context) error {
 		return err
 	}
 
-	clients, _, err := nomadClient.Nodes().List(&api.QueryOptions{AllowStale: true})
+	clients, err := helpers.FilteredClientList(nomadClient, c)
 	if err != nil {
 		return err
 	}
@@ -129,32 +130,10 @@ func distributeRunningAllocsOn(name string, nodes map[string]detailedNode, reade
 	header = append(header, "count")
 	table.SetHeader(header)
 
-	// chars := make([]string, len(m[0].names))
-	// names := make([]string, len(m[0].names))
-
 	for i, l := range m {
 		o := make([]string, len(l.names))
 		row := l.names
 		copy(o, l.names)
-
-		// hack: make sure to "close" rows visually when root value changes
-		// for i := range l.names {
-		// 	if i+1 < len(row) {
-		// 		break
-		// 	}
-
-		// 	if o[0] != names[i+1] {
-		// 		row[i] = o[0]
-
-		// 		if chars[i] == "\001" {
-		// 			chars[i] = "\002"
-		// 		} else {
-		// 			chars[i] = "\001"
-		// 		}
-		// 	}
-
-		// 	row[i] = fmt.Sprintf("%s%s", o[i], chars[i])
-		// }
 
 		// hack: make sure the value of 'value' is never the same
 		char := "\001"

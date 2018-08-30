@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/hashicorp/nomad/api"
+	"github.com/seatgeek/nomad-helper/helpers"
 	log "github.com/sirupsen/logrus"
 	cli "gopkg.in/urfave/cli.v1"
 )
@@ -44,7 +45,7 @@ func Drain(c *cli.Context) error {
 	}
 
 	// find nodes to target
-	matches, err := filter(nomadClient, c.Parent())
+	matches, err := helpers.FilteredClientList(nomadClient, c.Parent())
 	if err != nil {
 		return err
 	}

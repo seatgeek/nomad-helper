@@ -1,4 +1,4 @@
-package node
+package helpers
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ var (
 	nodeCache = make(map[string]*api.Node)
 )
 
-func filter(client *api.Client, c *cli.Context) ([]*api.NodeListStub, error) {
+func FilteredClientList(client *api.Client, c *cli.Context) ([]*api.NodeListStub, error) {
 	log.Info("Finding legible nodes")
 	nodes, _, err := client.Nodes().List(&api.QueryOptions{Prefix: c.String("filter-prefix")})
 	if err != nil {
