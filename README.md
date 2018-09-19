@@ -217,7 +217,7 @@ OPTIONS:
 
 ### export
 
-`nomad-helper scale-export production.yml` will read the Nomad cluster `job  + group + count` values and write them to a local `production.yml` file.
+`nomad-helper scale export production.yml` will read the Nomad cluster `job  + group + count` values and write them to a local `production.yml` file.
 
 ```
 NAME:
@@ -229,7 +229,7 @@ USAGE:
 
 ### import
 
-`nomad-helper scale-import production.yml` will update the Nomad cluster `job + group + count` values according to the values in a local `production.yaml` file.
+`nomad-helper scale import production.yml` will update the Nomad cluster `job + group + count` values according to the values in a local `production.yaml` file.
 
 ```
 NAME:
