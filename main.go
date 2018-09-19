@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"sort"
 	"time"
@@ -227,10 +226,14 @@ func main() {
 					Action: func(c *cli.Context) error {
 						configFile := c.Args().Get(0)
 						if configFile == "" {
-							return fmt.Errorf("Missing file name")
+							log.Fatal("Missing file name")
 						}
 
-						return scale.ExportCommand(configFile)
+						if err := scale.ExportCommand(configFile); err != nil {
+							log.Fatal(err)
+						}
+
+						return nil
 					},
 				},
 				{
@@ -239,10 +242,14 @@ func main() {
 					Action: func(c *cli.Context) error {
 						configFile := c.Args().Get(0)
 						if configFile == "" {
-							return fmt.Errorf("Missing file name")
+							log.Fatal("Missing file name")
 						}
 
-						return scale.ImportCommand(configFile)
+						if err := scale.ImportCommand(configFile); err != nil {
+							log.Fatal(err)
+						}
+
+						return nil
 					},
 				},
 			},
