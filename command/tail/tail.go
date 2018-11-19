@@ -52,13 +52,13 @@ func Run(c *cli.Context) error {
 	if c.BoolT("stdout") {
 		wg.Add(1)
 		logger := log.WithField("log_type", "stdout")
-		go Tail(getWriter("stdout", c.String("writer")), "stderr", taskName, alloc, nomadClient, &wg, logger)
+		go Tail(getWriter("stdout", c.String("writer"), c.String("theme")), "stderr", taskName, alloc, nomadClient, &wg, logger)
 	}
 
 	if c.BoolT("stderr") {
 		wg.Add(1)
 		logger := log.WithField("log_type", "stderr")
-		go Tail(getWriter("stderr", c.String("writer")), "stdout", taskName, alloc, nomadClient, &wg, logger)
+		go Tail(getWriter("stderr", c.String("writer"), c.String("theme")), "stdout", taskName, alloc, nomadClient, &wg, logger)
 	}
 
 	go func() {
@@ -76,10 +76,10 @@ func Run(c *cli.Context) error {
 	return nil
 }
 
-func getWriter(target, kind string) io.Writer {
+func getWriter(target, kind, theme string) io.Writer {
 	switch kind {
 	case "color":
-		return colorLogWriter{Type: target}
+		return colorLogWriter{Type: target, Theme: theme}
 	case "simple":
 		return simpleLogWriter{Type: target}
 	case "raw":

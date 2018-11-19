@@ -126,6 +126,11 @@ func main() {
 					Value: "color",
 					Usage: "(optional, default: color) writer type (raw, color, simple)",
 				},
+				cli.StringFlag{
+					Name:  "theme, ct",
+					Value: "emacs",
+					Usage: "(optional, default: emacs) Chroma color scheme to use - see https://xyproto.github.io/splash/docs/",
+				},
 			},
 			Action: func(c *cli.Context) error {
 				if err := tail.Run(c); err != nil {

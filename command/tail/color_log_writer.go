@@ -13,7 +13,8 @@ import (
 )
 
 type colorLogWriter struct {
-	Type string
+	Type  string
+	Theme string
 }
 
 func (w colorLogWriter) Write(p []byte) (n int, err error) {
@@ -21,7 +22,7 @@ func (w colorLogWriter) Write(p []byte) (n int, err error) {
 
 	if string(s[0]) == "{" {
 		buffer := bytes.NewBufferString("")
-		highlight(buffer, s, "json", "terminal", "emacs")
+		highlight(buffer, s, "json", "terminal", w.Theme)
 		s = buffer.String()
 	}
 
