@@ -52,13 +52,13 @@ func Run(c *cli.Context) error {
 	if c.BoolT("stdout") {
 		wg.Add(1)
 		logger := log.WithField("log_type", "stdout")
-		go Tail("stdout", taskName, alloc, nomadClient, &wg, logger)
+		go Tail(getWriter("stdout", c.String("writer")), "stderr", taskName, alloc, nomadClient, &wg, logger)
 	}
 
 	if c.BoolT("stderr") {
 		wg.Add(1)
 		logger := log.WithField("log_type", "stderr")
-		go Tail("stderr", taskName, alloc, nomadClient, &wg, logger)
+		go Tail(getWriter("stderr", c.String("writer")), "stdout", taskName, alloc, nomadClient, &wg, logger)
 	}
 
 	go func() {
@@ -76,7 +76,20 @@ func Run(c *cli.Context) error {
 	return nil
 }
 
-func Tail(logType, task string, alloc *api.Allocation, client *api.Client, wg *sync.WaitGroup, logger *log.Entry) {
+func getWriter(target, kind string) io.Writer {
+	switch kind {
+	case "color":
+		return colorLogWriter{Type: target}
+	case "simple":
+		return simpleLogWriter{Type: target}
+	case "raw":
+		return rawLogWriter{Type: target}
+	default:
+		panic("Invalid log ")
+	}
+}
+
+func Tail(wr io.Writer, logType, task string, alloc *api.Allocation, client *api.Client, wg *sync.WaitGroup, logger *log.Entry) {
 	var err error
 	var r io.ReadCloser
 	var readErr error
@@ -97,7 +110,7 @@ func Tail(logType, task string, alloc *api.Allocation, client *api.Client, wg *s
 	}
 
 	defer r.Close()
-	_, err = io.Copy(colorLogWriter{Type: logType}, r)
+	_, err = io.Copy(wr, r)
 	if err != nil {
 		logger.Error(fmt.Sprintf("error following logs: %s", err))
 		return

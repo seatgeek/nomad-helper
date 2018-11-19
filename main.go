@@ -121,6 +121,11 @@ func main() {
 					Name:  "stdout",
 					Usage: "(optional, default: true) tail stdout from nomad",
 				},
+				cli.StringFlag{
+					Name:  "writer",
+					Value: "color",
+					Usage: "(optional, default: color) writer type (raw, color, simple)",
+				},
 			},
 			Action: func(c *cli.Context) error {
 				if err := tail.Run(c); err != nil {

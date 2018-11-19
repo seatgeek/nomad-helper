@@ -2,14 +2,14 @@ package tail
 
 import (
 	"bytes"
+	"fmt"
 	"io"
-	"strings"
+	"os"
 
 	"github.com/alecthomas/chroma"
 	"github.com/alecthomas/chroma/formatters"
 	"github.com/alecthomas/chroma/lexers"
 	"github.com/alecthomas/chroma/styles"
-	log "github.com/sirupsen/logrus"
 )
 
 type colorLogWriter struct {
@@ -18,7 +18,6 @@ type colorLogWriter struct {
 
 func (w colorLogWriter) Write(p []byte) (n int, err error) {
 	s := string(p)
-	s = strings.Trim(s, "\n")
 
 	if string(s[0]) == "{" {
 		buffer := bytes.NewBufferString("")
@@ -27,11 +26,9 @@ func (w colorLogWriter) Write(p []byte) (n int, err error) {
 	}
 
 	if w.Type == "stdout" {
-		log.Info(s)
-	} else if w.Type == "stderr" {
-		log.Error(s)
+		fmt.Fprintf(os.Stdout, s)
 	} else {
-		log.Warn(s)
+		fmt.Fprintf(os.Stderr, s)
 	}
 
 	return len(p), nil
