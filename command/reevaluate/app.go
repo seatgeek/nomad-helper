@@ -18,15 +18,22 @@ func App() error {
 
 	for _, jobStub := range jobStubs {
 		if strings.Contains(jobStub.ID, "/periodic-") {
-			log.Info("Skipping %s - periodic job", jobStub.Name)
+			log.Infof("Skipping %s - periodic job", jobStub.Name)
+			continue
+		}
+
+		if jobStub.Type == api.JobTypeBatch {
+			log.Infof("Skipping %s - batch job", jobStub.Name)
 			continue
 		}
 
 		log.Infof("Evaluating %s", jobStub.Name)
-		_, _, err := client.Jobs().EvaluateWithOpts(jobStub.ID, api.EvalOptions{ForceReschedule: true}, &api.WriteOptions{})
+		evalID, _, err := client.Jobs().EvaluateWithOpts(jobStub.ID, api.EvalOptions{ForceReschedule: true}, nil)
 		if err != nil {
 			log.Errorf("  %s", err)
 		}
+
+		log.Infof("  OK - eval id %s", evalID)
 	}
 
 	return nil
