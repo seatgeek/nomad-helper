@@ -49,6 +49,12 @@ func FilteredClientList(client *api.Client, c *cli.Context) ([]*api.NodeListStub
 			goto NEXT_NODE
 		}
 
+		// only consider nodes with the right eligibility
+		if eligibility := c.String("filter-eligibility"); eligibility != "" && node.SchedulingEligibility != eligibility {
+			log.Debugf("Node %s eligibility '%s' do not match expected node eligibility '%s'", node.Name, node.SchedulingEligibility, eligibility)
+			goto NEXT_NODE
+		}
+
 		// filter by client meta keys
 		if meta := c.StringSlice("filter-meta"); len(meta) > 0 {
 			for _, chunk := range meta {
