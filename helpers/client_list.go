@@ -49,6 +49,12 @@ func FilteredClientList(client *api.Client, c *cli.Context) ([]*api.NodeListStub
 			goto NEXT_NODE
 		}
 
+		// only consider nodes with the right eligibility
+		if eligibility := c.String("filter-eligibility"); eligibility != "" && node.SchedulingEligibility != eligibility {
+			log.Debugf("Node %s eligibility '%s' do not match expected node eligibility '%s'", node.Name, node.SchedulingEligibility, eligibility)
+			goto NEXT_NODE
+		}
+
 		// filter by client meta keys
 		if meta := c.StringSlice("filter-meta"); len(meta) > 0 {
 			for _, chunk := range meta {
@@ -101,6 +107,12 @@ func FilteredClientList(client *api.Client, c *cli.Context) ([]*api.NodeListStub
 	}
 
 	log.Infof("Found %d matched nodes", len(matches))
+
+	// only work on specific percent of nodes
+	if percent := c.Int("percent"); percent < 100 {
+		log.Infof("Only %d percent of nodes should be used", percent)
+		matches = matches[0:len(matches) * percent / 100]
+	}
 
 	// noop mode will fail the matching to prevent any further processing
 	if c.BoolT("noop") {
