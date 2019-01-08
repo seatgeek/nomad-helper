@@ -33,6 +33,11 @@ var filterFlags = []cli.Flag{
 		Name:  "filter-eligibility",
 		Usage: "Filter nodes by their eligibility status `eligible/ineligible`",
 	},
+	cli.IntFlag{
+		Name:  "percent",
+		Usage: "Filter only specific percent of nodes percent of nodes",
+		Value: 100,
+	},
 	cli.StringSliceFlag{
 		Name:  "filter-meta",
 		Usage: "Filter nodes by their meta key/value like `'aws.instance.availability-zone=us-east-1e'`. Can be provided multiple times.",

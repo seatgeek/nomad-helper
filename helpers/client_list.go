@@ -108,6 +108,12 @@ func FilteredClientList(client *api.Client, c *cli.Context) ([]*api.NodeListStub
 
 	log.Infof("Found %d matched nodes", len(matches))
 
+	// only work on specific percent of nodes
+	if percent := c.Int("percent"); percent < 100 {
+		log.Infof("Only %d percent of nodes should be used", percent)
+		matches = matches[0:len(matches) * percent / 100]
+	}
+
 	// noop mode will fail the matching to prevent any further processing
 	if c.BoolT("noop") {
 		for _, node := range matches {
