@@ -141,6 +141,8 @@ OPTIONS:
    --filter-prefix ef30d57c                                   Filter nodes by their ID with prefix matching ef30d57c
    --filter-class batch-jobs                                  Filter nodes by their node class batch-jobs
    --filter-version 0.8.4                                     Filter nodes by their Nomad version 0.8.4
+   --filter-eligibility                                       Filter nodes by theit sheduling eligibility
+   --percent                                                  Filter only specific percent of nodes
    --filter-meta 'aws.instance.availability-zone=us-east-1e'  Filter nodes by their meta key/value like 'aws.instance.availability-zone=us-east-1e'. Can be provided multiple times.
    --filter-attribute 'driver.docker.version=17.09.0-ce'      Filter nodes by their attribute key/value like 'driver.docker.version=17.09.0-ce'. Can be provided multiple times.
    --noop                                                     Only output nodes that would be drained, don't do any modifications
