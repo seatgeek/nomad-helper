@@ -3,12 +3,11 @@ package scale
 import (
 	"io/ioutil"
 
-	yaml "gopkg.in/yaml.v2"
-
 	"github.com/hashicorp/nomad/api"
 	"github.com/seatgeek/nomad-helper/nomad"
 	"github.com/seatgeek/nomad-helper/structs"
 	log "github.com/sirupsen/logrus"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func ImportCommand(file string) error {
@@ -31,12 +30,11 @@ func ImportCommand(file string) error {
 	}
 
 	for localJobName, jobGroups := range localState.Jobs {
-		log.Info("")
-		log.Infof("%s", localJobName)
+		logger := log.WithField("job", localJobName)
 
 		remoteJob, _, err := client.Jobs().Info(localJobName, &api.QueryOptions{})
 		if err != nil {
-			log.Errorf("--> Could not find remote job: %s", err)
+			logger.Errorf("Could not find remote job: %s", err)
 			continue
 		}
 
@@ -46,7 +44,6 @@ func ImportCommand(file string) error {
 		oldCount := 0
 
 		for localGroupName, localGroupCount := range jobGroups {
-			log.Infof("--> %s", localGroupName)
 			for i, jobGroup := range remoteJob.TaskGroups {
 				// Name doesn't match
 				if localGroupName != *jobGroup.Name {
@@ -57,7 +54,7 @@ func ImportCommand(file string) error {
 
 				// Don't bother to update if the count is already the same
 				if *jobGroup.Count == localGroupCount {
-					log.Info("----> Skipping update since remote and local count is the same")
+					logger.Info("Skipping update since remote and local count is the same")
 					break
 				}
 
@@ -66,7 +63,7 @@ func ImportCommand(file string) error {
 
 				remoteJob.TaskGroups[i].Count = &localGroupCount
 
-				log.Infof("----> Will change group count from %d to %d", oldCount, localGroupCount)
+				logger.Infof("Will change group count from %d to %d", oldCount, localGroupCount)
 
 				shouldUpdate = true
 				break
@@ -74,7 +71,7 @@ func ImportCommand(file string) error {
 
 			// If we could not find the job, alert and move on to the next
 			if !foundRemoteGroup {
-				log.Error("----> Could not find the group in remote cluster job")
+				logger.Error("Could not find the group in remote cluster job")
 				continue
 			}
 		}
