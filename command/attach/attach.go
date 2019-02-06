@@ -39,7 +39,7 @@ func Run(c *cli.Context) error {
 	}
 
 	colorstring.Printf("[green]* Going to attach to task '%s' on '%s' with command '%s'\n", taskName, node.Name, c.String("command"))
-	return connect([]string{"-t", ip, fmt.Sprintf("sudo su root -c 'docker exec -it %s-%s %s'", taskName, alloc.ID, c.String("command"))})
+	return connect([]string{"-t", ip, fmt.Sprintf("sudo docker exec -it %s-%s %s", taskName, alloc.ID, c.String("command"))})
 }
 
 func connect(args []string) error {
