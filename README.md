@@ -32,7 +32,7 @@
 
 # Running
 
-The project got build artifacts for linux, darwin and windows in the [GitHub releases tab](https://github.com/seatgeek/nomad-helper/releases).
+The project has build artifacts for linux, darwin and windows in the [GitHub releases tab](https://github.com/seatgeek/nomad-helper/releases).
 
 A docker container is also provided at [seatgeek/nomad-helper](https://hub.docker.com/r/seatgeek/nomad-helper/tags/)
 
@@ -68,7 +68,7 @@ The most basic requirement is `export NOMAD_ADDR=http://<ip>:4646`.
 
 ## Binary
 
-- Download the binary from [the release page](https://github.com/seatgeek/nomad-helper)
+- Download the binary from [the release page](https://github.com/seatgeek/nomad-helper/releases)
 - Use docker (`seatgeek/nomad-helper`)
 
 ## Source
