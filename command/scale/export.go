@@ -2,16 +2,15 @@ package scale
 
 import (
 	"io/ioutil"
+	"os"
+	"strings"
 	"time"
 
+	"github.com/hashicorp/nomad/api"
 	"github.com/seatgeek/nomad-helper/nomad"
 	"github.com/seatgeek/nomad-helper/structs"
-	yaml "gopkg.in/yaml.v2"
-
-	"os"
-
-	"github.com/hashicorp/nomad/api"
 	log "github.com/sirupsen/logrus"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func ExportCommand(file string) error {
@@ -40,6 +39,16 @@ func ExportCommand(file string) error {
 
 	for _, jobStub := range jobStubs {
 		log.Debugf("Scanning job %s", jobStub.Name)
+
+		if strings.Contains(jobStub.ID, "/periodic-") {
+			log.Infof("Skipping %s - periodic job", jobStub.Name)
+			continue
+		}
+
+		if jobStub.Type == api.JobTypeBatch {
+			log.Infof("Skipping %s - batch job", jobStub.Name)
+			continue
+		}
 
 		job, _, err := client.Jobs().Info(jobStub.Name, &api.QueryOptions{})
 		if err != nil {
