@@ -25,7 +25,7 @@ func init() {
 }
 
 func FilteredClientList(client *api.Client, c *cli.Context) ([]*api.NodeListStub, error) {
-	stderrLog.Info("Finding legible nodes")
+	stderrLog.Info("Finding eligible nodes")
 	nodes, _, err := client.Nodes().List(&api.QueryOptions{Prefix: c.String("filter-prefix")})
 	if err != nil {
 		return nil, err
