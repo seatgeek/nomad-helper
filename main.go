@@ -288,8 +288,7 @@ func main() {
 			),
 			Action: func(c *cli.Context) error {
 				if err := stats.Run(c); err != nil {
-					log.Error(err)
-					return err
+					log.Fatal(err)
 				}
 				return nil
 			},
