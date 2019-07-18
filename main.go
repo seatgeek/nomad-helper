@@ -280,10 +280,15 @@ func main() {
 				cli.StringSliceFlag{
 					Name: "dimension",
 				},
+				cli.StringFlag{
+					Name:  "output-format",
+					Value: "table",
+					Usage: "Either `table, json or json-pretty`",
+				},
 			),
 			Action: func(c *cli.Context) error {
 				if err := stats.Run(c); err != nil {
-					panic(err)
+					log.Fatal(err)
 				}
 				return nil
 			},
