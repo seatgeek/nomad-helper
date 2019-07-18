@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"runtime"
@@ -82,46 +83,67 @@ func Run(c *cli.Context) error {
 	}
 	wg.Wait()
 
-	distributeRunningAllocsOn("", detailedClients, metaPropReader(dimensions...))
+	propReader := metaPropReader(dimensions...)
+	result := computeStruct(detailedClients, propReader)
 
-	// distributeRunningAllocsOn("NodeClass", detailedClients, metaPropReader("NodeClass"))
-	// distributeRunningAllocsOn("AZ + Class", detailedClients, metaPropReader("meta.aws.instance.availability-zone", "NodeClass"))
-	// distributeRunningAllocsOn("Instance type", detailedClients, metaPropReader("meta.aws.instance.availability-zone", "meta.aws.instance.type"))
-	// distributeRunningAllocsOn("Instance type", detailedClients, metaPropReader("meta.aws.instance.life-cycle", "meta.aws.instance.availability-zone", "meta.aws.instance.type"))
+	switch c.String("output-format") {
+	case "table":
+		printTable(result, propReader)
 
-	// spew.Dump(detailedClients)
+	case "json":
+		jsonText, err := json.Marshal(result)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(string(jsonText))
+
+	case "json-pretty":
+		jsonText, err := json.MarshalIndent(result, "", "  ")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(string(jsonText))
+
+	default:
+		return fmt.Errorf("Invalid output-format: %s", c.String("output-format"))
+	}
+
 	return nil
 }
 
-type hit struct {
-	name  string
-	names []string
-	value int
-}
-
-func distributeRunningAllocsOn(name string, nodes map[string]detailedNode, reader propReader) {
-	m := make([]*hit, 0)
+func computeStruct(nodes map[string]detailedNode, reader propReader) []*result {
+	m := make([]*result, 0)
 
 	for _, node := range nodes {
 		names := reader.read(node)
 		key := strings.Join(names, ".")
 
 		if v, ok := get(m, key); ok {
-			v.value++
+			v.Value++
 			continue
 		}
 
-		m = append(m, &hit{
-			name:  key,
-			names: names,
-			value: 1,
+		m = append(m, &result{
+			Key:   key,
+			Path:  names,
+			Value: 1,
 		})
 	}
 
 	sort.Slice(m, func(i, j int) bool {
-		return m[i].name < m[j].name
+		return m[i].Key < m[j].Key
 	})
 
+	return m
+}
+
+type result struct {
+	Key   string   `json:"key"`
+	Path  []string `json:"path"`
+	Value int      `json:"value"`
+}
+
+func printTable(m []*result, reader propReader) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoMergeCells(true)
 	table.SetRowLine(true)
@@ -131,9 +153,9 @@ func distributeRunningAllocsOn(name string, nodes map[string]detailedNode, reade
 	table.SetHeader(header)
 
 	for i, l := range m {
-		o := make([]string, len(l.names))
-		row := l.names
-		copy(o, l.names)
+		o := make([]string, len(l.Path))
+		row := l.Path
+		copy(o, l.Path)
 
 		// hack: make sure the value of 'value' is never the same
 		char := "\001"
@@ -141,16 +163,16 @@ func distributeRunningAllocsOn(name string, nodes map[string]detailedNode, reade
 			char = "\002"
 		}
 
-		row = append(row, fmt.Sprintf("%d%s", l.value, char))
+		row = append(row, fmt.Sprintf("%d%s", l.Value, char))
 		table.Append(row)
 	}
 
 	table.Render()
 }
 
-func get(m []*hit, name string) (*hit, bool) {
+func get(m []*result, name string) (*result, bool) {
 	for _, x := range m {
-		if (*x).name == name {
+		if (*x).Key == name {
 			return x, true
 		}
 	}
