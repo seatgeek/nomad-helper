@@ -5,6 +5,9 @@ GET_GOOS   		 = $(word 1,$(subst -, ,$1))
 GOBUILD   		?= $(shell go env GOOS)-$(shell go env GOARCH)
 GOFILES_NOVENDOR = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 VETARGS? 		 =-all
+GIT_COMMIT 		:= $(shell git describe --tags)
+GIT_DIRTY 		:= $(if $(shell git status --porcelain),+CHANGES)
+GO_LDFLAGS 		:= "-X main.Version=$(GIT_COMMIT)$(GIT_DIRTY)"
 
 $(BUILD_DIR):
 	mkdir -p $@
@@ -43,7 +46,7 @@ vet: fmt
 BINARIES = $(addprefix $(BUILD_DIR)/nomad-helper-, $(GOBUILD))
 $(BINARIES): $(BUILD_DIR)/nomad-helper-%: $(BUILD_DIR)
 	@echo "=> building $@ ..."
-	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 go build -o $@
+	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 go build -o $@ -ldflags $(GO_LDFLAGS)
 
 .PHONY: dist
 dist: install fmt vet

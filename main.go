@@ -56,11 +56,14 @@ var filterFlags = []cli.Flag{
 	},
 }
 
+// Version is filled in by the compiler (git tag + changes)
+var Version = "local-dev"
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "nomad-helper"
 	app.Usage = "Useful utilties for working with Nomad at scale"
-	app.Version = "1.0"
+	app.Version = Version
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
