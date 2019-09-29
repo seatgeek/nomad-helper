@@ -12,7 +12,7 @@ import (
 	cli "github.com/urfave/cli"
 )
 
-func List(c *cli.Context) error {
+func List(c *cli.Context, logger *log.Logger) error {
 	// Default list of fields if none are provided by the user
 	fields := []string{"name", "status", "SchedulingEligibility", "drain", "class"}
 
@@ -22,7 +22,7 @@ func List(c *cli.Context) error {
 	}
 
 	// Collect Node data from the Nomad cluster
-	nodes, err := getData(c)
+	nodes, err := getData(c, logger)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,7 +56,7 @@ func List(c *cli.Context) error {
 	return nil
 }
 
-func computeListTableStruct(nodes map[string]*api.Node, reader helpers.PropReader) [][]string {
+func computeListTableStruct(nodes []*api.Node, reader helpers.PropReader) [][]string {
 	m := make([][]string, 0)
 
 	for _, node := range nodes {
@@ -67,7 +67,7 @@ func computeListTableStruct(nodes map[string]*api.Node, reader helpers.PropReade
 	return m
 }
 
-func computeListRawStruct(nodes map[string]*api.Node, reader helpers.PropReader) []map[string]string {
+func computeListRawStruct(nodes []*api.Node, reader helpers.PropReader) []map[string]string {
 	m := make([]map[string]string, 0)
 
 	for _, node := range nodes {

@@ -52,7 +52,11 @@ func (r *Reader) getPropValue(prop string, node *api.Node) string {
 	switch strings.ToLower(chunks[0]) {
 	case "attributes", "attribute":
 		key := strings.Join(chunks[1:], ".")
-		return node.Attributes[key]
+		value, ok := node.Attributes[key]
+		if !ok {
+			return "- missing -"
+		}
+		return value
 
 	// Common attribute shortcuts
 	case "hostname":
@@ -63,7 +67,11 @@ func (r *Reader) getPropValue(prop string, node *api.Node) string {
 
 	case "meta":
 		key := strings.Join(chunks[1:], ".")
-		return node.Meta[key]
+		value, ok := node.Meta[key]
+		if !ok {
+			return "- missing -"
+		}
+		return value
 
 	case "nodeclass", "class":
 		return node.NodeClass

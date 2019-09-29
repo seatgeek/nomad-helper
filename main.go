@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -139,12 +140,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				if err := attach.Run(c); err != nil {
-					log.Fatal(err)
-					return err
-				}
-
-				return nil
+				return attach.Run(c)
 			},
 		},
 		{
@@ -183,12 +179,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				if err := tail.Run(c); err != nil {
-					log.Fatal(err)
-					return err
-				}
-
-				return nil
+				return tail.Run(c)
 			},
 		},
 		{
@@ -243,12 +234,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						if err := node.Drain(c); err != nil {
-							log.Fatal(err)
-							return err
-						}
-
-						return nil
+						return node.Drain(c, log.StandardLogger())
 					},
 				},
 				{
@@ -266,12 +252,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						if err := node.Eligibility(c); err != nil {
-							log.Fatal(err)
-							return err
-						}
-
-						return nil
+						return node.Eligibility(c, log.StandardLogger())
 					},
 				},
 				{
@@ -288,12 +269,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						if err := node.List(c); err != nil {
-							log.Fatal(err)
-							return err
-						}
-
-						return nil
+						return node.List(c, log.StandardLogger())
 					},
 				},
 				{
@@ -311,10 +287,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						if err := node.Stats(c); err != nil {
-							log.Fatal(err)
-						}
-						return nil
+						return node.Breakdown(c, log.StandardLogger())
 					},
 				},
 			},
@@ -329,14 +302,10 @@ func main() {
 					Action: func(c *cli.Context) error {
 						configFile := c.Args().Get(0)
 						if configFile == "" {
-							log.Fatal("Missing file name")
+							return fmt.Errorf("Missing file name")
 						}
 
-						if err := scale.ExportCommand(configFile); err != nil {
-							log.Fatal(err)
-						}
-
-						return nil
+						return scale.ExportCommand(configFile)
 					},
 				},
 				{
@@ -345,16 +314,38 @@ func main() {
 					Action: func(c *cli.Context) error {
 						configFile := c.Args().Get(0)
 						if configFile == "" {
-							log.Fatal("Missing file name")
+							return fmt.Errorf("Missing file name")
 						}
 
-						if err := scale.ImportCommand(configFile); err != nil {
-							log.Fatal(err)
-						}
-
-						return nil
+						return scale.ImportCommand(configFile)
 					},
 				},
+			},
+		},
+		{
+			Name:   "stats",
+			Hidden: true,
+			Usage:  "Deprecated!",
+			Flags: append(filterFlags,
+				cli.StringSliceFlag{
+					Name: "dimension",
+				},
+				cli.StringFlag{
+					Name:  "output-format",
+					Value: "table",
+					Usage: "Either `table, json or json-pretty`",
+				},
+			),
+			Action: func(c *cli.Context) error {
+				err := node.Stats(c)
+				log.Error("")
+				log.Error("'nomad-helper stats' is deprecated, please use 'nomad-helper node breakdown' instead")
+				log.Error("")
+				log.Error("Below is a best-effort compatible command for the migration")
+				log.Error("")
+				log.Error(err.Error())
+				log.Fatal("")
+				return err
 			},
 		},
 		{
@@ -379,7 +370,6 @@ func main() {
 			log.Fatal(err)
 		}
 		log.SetLevel(level)
-
 		return nil
 	}
 

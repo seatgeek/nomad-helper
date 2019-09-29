@@ -1,121 +1,59 @@
 package node
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
-	"sort"
 	"strings"
 
-	"github.com/hashicorp/nomad/api"
-	"github.com/olekukonko/tablewriter"
-	"github.com/seatgeek/nomad-helper/helpers"
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli"
 )
 
 func Stats(c *cli.Context) error {
-	// Get list of CLI arguments we should use as dimensions
-	dimensions := getCLIArgs(c)
-
-	// We require at minimum one field
+	dimensions := c.StringSlice("dimension")
 	if len(dimensions) == 0 {
-		log.Fatal("Missing argument for list of fields to use as dimensions")
+		log.Fatal("Please provide a list of dimensions")
 	}
 
-	// Collect Node data from the Nomad cluster
-	nodes, err := getData(c)
-	if err != nil {
-		log.Fatal(err)
+	args := make([]string, 0)
+	for _, dimension := range dimensions {
+		args = append(args, dimension)
 	}
 
-	// Create a prop reader for results
-	propReader := helpers.NewMetaPropReader(dimensions...)
+	flags := ""
 
-	// Compute result
-	result := computeStruct(nodes, propReader)
+	if value := c.String("filter-prefix"); len(value) > 0 {
+		flags = flags + fmt.Sprintf("--filter-prefix=%+v ", value)
+	}
 
-	// Create output based on requested format
-	switch c.String("output-format") {
-	case "table":
-		printTable(result, propReader)
+	if value := c.String("filter-class"); len(value) > 0 {
+		flags = flags + fmt.Sprintf("--filter-class=%+v ", value)
+	}
 
-	case "json":
-		jsonText, err := json.Marshal(result)
-		if err != nil {
-			panic(err)
+	if value := c.String("filter-version"); len(value) > 0 {
+		flags = flags + fmt.Sprintf("--filter-version=%+v ", value)
+	}
+
+	if value := c.String("filter-eligibility"); len(value) > 0 {
+		flags = flags + fmt.Sprintf("--filter-eligibility=%+v ", value)
+	}
+
+	if value := c.Int("percent"); value != 100 {
+		flags = flags + fmt.Sprintf("--percent=%+v ", value)
+	}
+
+	if value := c.StringSlice("filter-meta"); len(value) > 0 {
+		for _, item := range value {
+			flags = flags + fmt.Sprintf("--filter-meta=%+v ", item)
 		}
-		fmt.Println(string(jsonText))
-
-	case "json-pretty":
-		jsonText, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println(string(jsonText))
-
-	default:
-		return fmt.Errorf("Invalid output-format: %s", c.String("output-format"))
 	}
 
-	return nil
-}
-
-func computeStruct(nodes map[string]*api.Node, reader helpers.PropReader) []*result {
-	m := make([]*result, 0)
-
-	for _, node := range nodes {
-		names := reader.Read(node)
-		key := strings.Join(names, ".")
-
-		if v, ok := get(m, key); ok {
-			v.Value++
-			continue
+	if value := c.StringSlice("filter-attribute"); len(value) > 0 {
+		for _, item := range value {
+			flags = flags + fmt.Sprintf("--filter-attribute=%+v ", item)
 		}
-
-		m = append(m, &result{
-			Key:   key,
-			Path:  names,
-			Value: 1,
-		})
 	}
 
-	sort.Slice(m, func(i, j int) bool {
-		return m[i].Key < m[j].Key
-	})
+	return fmt.Errorf("nomad-helper node %sbreakdown %s", flags, strings.Join(args, " "))
 
-	return m
-}
-
-type result struct {
-	Key   string   `json:"key"`
-	Path  []string `json:"path"`
-	Value int      `json:"value"`
-}
-
-func printTable(m []*result, reader helpers.PropReader) {
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetAutoMergeCells(true)
-	table.SetRowLine(true)
-
-	header := reader.GetKeys()
-	header = append(header, "count")
-	table.SetHeader(header)
-
-	for i, l := range m {
-		o := make([]string, len(l.Path))
-		row := l.Path
-		copy(o, l.Path)
-
-		// hack: make sure the value of 'value' is never the same
-		char := "\001"
-		if i%2 == 0 {
-			char = "\002"
-		}
-
-		row = append(row, fmt.Sprintf("%d%s", l.Value, char))
-		table.Append(row)
-	}
-
-	table.Render()
+	// return nil
 }
