@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/hashicorp/nomad/api"
-	"github.com/schollz/progressbar"
+	"github.com/schollz/progressbar/v2"
 	log "github.com/sirupsen/logrus"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 var (
@@ -119,7 +119,7 @@ func FilteredClientList(client *api.Client, c *cli.Context) ([]*api.NodeListStub
 	stderrLog.Infof("Found %d matched nodes", len(matches))
 
 	// only work on specific percent of nodes
-	if percent := c.Int("percent"); percent < 100 {
+	if percent := c.Int("percent"); percent > 0 && percent < 100 {
 		stderrLog.Infof("Only %d percent of nodes should be used", percent)
 		matches = matches[0 : len(matches)*percent/100]
 	}

@@ -1,7 +1,5 @@
 # nomad-helper
 
-<!-- TOC -->
-
 - [nomad-helper](#nomad-helper)
 - [Running](#running)
 - [Requirements](#requirements)
@@ -19,14 +17,14 @@
             - [Examples](#examples)
         - [eligibility](#eligibility)
             - [Examples](#examples-1)
+        - [breakdown](#breakdown)
+        - [list](#list)
     - [scale](#scale)
         - [export](#export)
         - [import](#import)
         - [Example Scale config](#example-scale-config)
     - [reevaluate-all](#reevaluate-all)
     - [gc](#gc)
-
-<!-- /TOC -->
 
 `nomad-helper` is a tool meant to enable teams to quickly onboard themselves with nomad, by exposing scaling functionality in a simple to use and share yaml format.
 
@@ -38,10 +36,16 @@ A docker container is also provided at [seatgeek/nomad-helper](https://hub.docke
 
 # Requirements
 
-- Go 1.10
-- govender https://github.com/kardianos/govendor/
+- Go 1.13.1
 
 # Building
+
+Recommend environment variables
+
+```sh
+export GO111MODULE=on
+export GOPROXY=https://proxy.golang.org
+```
 
 To build a binary, run the following
 
@@ -52,8 +56,11 @@ go get github.com/seatgeek/nomad-helper
 # go to the repo directory
 cd $GOPATH/src/github.com/seatgeek/nomad-helper
 
-# build the `nomad-helper` binary
-make build
+# install the `nomad-helper` binary into $GOPATH/bin
+make install
+
+# install the `nomad-helper` binary ./build/nomad-helper-${GOOS}-${GOARCH}
+make install
 ```
 
 This will create a `nomad-helper` binary in your `$GOPATH/bin` directory.
@@ -151,7 +158,7 @@ OPTIONS:
 
 ### Filter examples
 
-- `nomad-helper node --filter-meta 'aws.instance.availability-zone=us-east-1e'  --filter-attribute 'driver.docker.version=17.09.0-ce' <command> <args>`
+- `nomad-helper node <command> <args>`
 - `nomad-helper node --noop --filter-meta 'aws.instance.availability-zone=us-east-1e'  --filter-attribute 'driver.docker.version=17.09.0-ce' <command> <args>`
 
 ### drain
@@ -176,7 +183,7 @@ OPTIONS:
 
 #### Examples
 
-- `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' drain --enable`
+- `nomad-helper node drain --enable`
 - `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' drain --noop --enable`
 
 ### eligibility
@@ -197,8 +204,96 @@ OPTIONS:
 
 #### Examples
 
-- `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' eligibility --enable`
+- `nomad-helper node eligibility --enable`
 - `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' eligibility --noop --enable`
+
+### Breakdown
+
+```
+NAME:
+   nomad-helper node breakdown - Break down (count) how many Nomad clients that match a list of key properties
+
+USAGE:
+   nomad-helper node [filters...] breakdown [command options] [keys...]
+
+DESCRIPTION:
+
+  ** Arguments **
+
+    * attribute.key will look up key in the "Attributes" Nomad client property
+    * hostname is an alias for attribute.unique.hostname
+    * ip / address / ip-address is alias for attribute.unique.network.ip-address
+    * meta.key will look up key in the "Meta" Nomad client configuration
+    * class / nodeclass for the Nomad client "NodeClass" property
+    * id for the Nomad client "ID" property
+    * datacenter / dc for the Nomad client "Datacenter" property
+    * drain for the Nomad client "Drain" property
+    * status for the Nomad client "Status" property
+    * eligibility / schedulingeligibility for the Nomad client "SchedulingEligibility" property
+
+  ** Filters **
+
+    --filter-prefix ef30d57c                                   Filter nodes by their ID with prefix matching ef30d57c
+    --filter-class batch-jobs                                  Filter nodes by their node class batch-jobs
+    --filter-version 0.8.4                                     Filter nodes by their Nomad version 0.8.4
+    --filter-eligibility eligible/ineligible                   Filter nodes by their eligibility status eligible/ineligible
+    --filter-meta 'aws.instance.availability-zone=us-east-1e'  Filter nodes by their meta key/value like 'aws.instance.availability-zone=us-east-1e'. Flag can be repeated.
+    --filter-attribute 'driver.docker.version=17.09.0-ce'      Filter nodes by their attribute key/value like 'driver.docker.version=17.09.0-ce'. Flag can be repeated.
+
+  ** Examples **
+
+    * nomad-helper node breakdown class status
+    * nomad-helper node breakdown attribute.nomad.version attribute.driver.docker
+    * nomad-helper node breakdown meta.aws.instance.region attribute.nomad.version
+
+
+OPTIONS:
+   --output-format value  Either "table", "json" or "json-pretty" (default: "table")
+```
+
+### List
+
+```
+NAME:
+   nomad-helper node list - Output list of key properties for a Nomad client
+
+USAGE:
+   nomad-helper node [filters...] list [command options] [keys...]
+
+DESCRIPTION:
+
+  ** Arguments **
+
+    * attribute.key will look up key in the "Attributes" Nomad client property
+    * hostname is an alias for attribute.unique.hostname
+    * ip / address / ip-address is alias for attribute.unique.network.ip-address
+    * meta.key will look up key in the "Meta" Nomad client configuration
+    * class / nodeclass for the Nomad client "NodeClass" property
+    * id for the Nomad client "ID" property
+    * datacenter / dc for the Nomad client "Datacenter" property
+    * drain for the Nomad client "Drain" property
+    * status for the Nomad client "Status" property
+    * eligibility / schedulingeligibility for the Nomad client "SchedulingEligibility" property
+
+  ** Filters **
+
+    --filter-prefix ef30d57c                                   Filter nodes by their ID with prefix matching ef30d57c
+    --filter-class batch-jobs                                  Filter nodes by their node class batch-jobs
+    --filter-version 0.8.4                                     Filter nodes by their Nomad version 0.8.4
+    --filter-eligibility eligible/ineligible                   Filter nodes by their eligibility status eligible/ineligible
+    --filter-meta 'aws.instance.availability-zone=us-east-1e'  Filter nodes by their meta key/value like 'aws.instance.availability-zone=us-east-1e'. Flag can be repeated.
+    --filter-attribute 'driver.docker.version=17.09.0-ce'      Filter nodes by their attribute key/value like 'driver.docker.version=17.09.0-ce'. Flag can be repeated.
+
+  ** Examples **
+
+    * nomad-helper node list class status
+    * nomad-helper node list attribute.nomad.version attribute.driver.docker
+    * nomad-helper node list meta.aws.instance.region attribute.nomad.version
+
+
+OPTIONS:
+   --output-format table, json or json-pretty  Either table, json or json-pretty (default: "table")
+```
 
 ## scale
 

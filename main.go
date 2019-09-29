@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/seatgeek/nomad-helper/command/attach"
@@ -10,11 +11,48 @@ import (
 	"github.com/seatgeek/nomad-helper/command/node"
 	"github.com/seatgeek/nomad-helper/command/reevaluate"
 	"github.com/seatgeek/nomad-helper/command/scale"
-	"github.com/seatgeek/nomad-helper/command/stats"
 	"github.com/seatgeek/nomad-helper/command/tail"
 	log "github.com/sirupsen/logrus"
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
+	"gopkg.in/workanator/go-ataman.v1"
 )
+
+var rndr = ataman.NewRenderer(ataman.BasicStyle())
+
+var fieldHelpText = `
+	<bold,underline>** Arguments **<reset>
+
+		* <bold>attribute.<reset,underline>key<reset> will look up <underline>key<reset> in the "Attributes" Nomad client property
+		* <bold>class<reset> / <bold>nodeclass<reset> for the Nomad client "NodeClass" property
+		* <bold>datacenter<reset> / <bold>dc<reset> for the Nomad client "Datacenter" property
+		* <bold>drain<reset> for the Nomad client "Drain" property
+		* <bold>eligibility<reset> / <bold>schedulingeligibility<reset> for the Nomad client "SchedulingEligibility" property
+		* <bold>hostname<reset> is an alias for <bold>attribute.<reset,underline>unique.hostname<reset>
+		* <bold>id<reset> for the Nomad client "ID" property
+		* <bold>ip<reset> / <bold>address<reset> / <bold>ip-address<reset> is alias for <bold>attribute.<reset,underline>unique.network.ip-address<reset>
+		* <bold>meta.<reset,underline>key<reset> will look up <underline>key<reset> in the "Meta" Nomad client configuration
+		* <bold>name<reset> for the Nomad client "Name" property
+		* <bold>status<reset> for the Nomad client "Status" property
+`
+
+var filterHelpText = `
+	<bold,underline>** Filters **<reset>
+
+		--filter-attribute 'driver.docker.version=17.09.0-ce'      Filter nodes by their attribute key/value like 'driver.docker.version=17.09.0-ce'. Flag can be repeated.
+		--filter-class batch-jobs                                  Filter nodes by their node class batch-jobs
+		--filter-eligibility eligible/ineligible                   Filter nodes by their eligibility status eligible/ineligible
+		--filter-meta 'aws.instance.availability-zone=us-east-1e'  Filter nodes by their meta key/value like 'aws.instance.availability-zone=us-east-1e'. Flag can be repeated.
+		--filter-prefix ef30d57c                                   Filter nodes by their ID with prefix matching ef30d57c
+		--filter-version 0.8.4                                     Filter nodes by their Nomad version 0.8.4
+`
+
+var helpExamples = `
+	<bold,underline>** Examples **<reset>
+
+		* nomad-helper node __COMMAND__ <bold>class status<reset>
+		* nomad-helper node __COMMAND__ <bold>attribute<reset,underline>.nomad.version<reset,bold> attribute.<reset,underline>driver.docker<reset>
+		* nomad-helper node __COMMAND__ <bold>meta.<reset,underline>aws.instance.region<reset,bold> attribute.<reset,underline>nomad.version<reset>
+`
 
 var filterFlags = []cli.Flag{
 	cli.StringFlag{
@@ -236,6 +274,49 @@ func main() {
 						return nil
 					},
 				},
+				{
+					Name:        "list",
+					Usage:       `Output list of key properties for a Nomad client`,
+					UsageText:   "nomad-helper node [filters...] list [command options] [keys...]",
+					Description: rndr.MustRender(fieldHelpText) + rndr.MustRender(filterHelpText) + rndr.MustRender(strings.ReplaceAll(helpExamples, "__COMMAND__", "list")),
+					ArgsUsage:   "[keys...]",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "output-format",
+							Value: "table",
+							Usage: "Either `table, json or json-pretty`",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						if err := node.List(c); err != nil {
+							log.Fatal(err)
+							return err
+						}
+
+						return nil
+					},
+				},
+				{
+					Name:        "breakdown",
+					Aliases:     []string{"stats"},
+					Usage:       `Break down (count) how many Nomad clients that match a list of key properties`,
+					UsageText:   "nomad-helper node [filters...] breakdown [command options] [keys...]",
+					Description: rndr.MustRender(fieldHelpText) + rndr.MustRender(filterHelpText) + rndr.MustRender(strings.ReplaceAll(helpExamples, "__COMMAND__", "breakdown")),
+					ArgsUsage:   "[keys...]",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "output-format",
+							Value: "table",
+							Usage: `Either "table", "json" or "json-pretty"`,
+						},
+					},
+					Action: func(c *cli.Context) error {
+						if err := node.Stats(c); err != nil {
+							log.Fatal(err)
+						}
+						return nil
+					},
+				},
 			},
 		},
 		{
@@ -274,26 +355,6 @@ func main() {
 						return nil
 					},
 				},
-			},
-		},
-		{
-			Name:  "stats",
-			Usage: "Get cluster stats",
-			Flags: append(filterFlags,
-				cli.StringSliceFlag{
-					Name: "dimension",
-				},
-				cli.StringFlag{
-					Name:  "output-format",
-					Value: "table",
-					Usage: "Either `table, json or json-pretty`",
-				},
-			),
-			Action: func(c *cli.Context) error {
-				if err := stats.Run(c); err != nil {
-					log.Fatal(err)
-				}
-				return nil
 			},
 		},
 		{
