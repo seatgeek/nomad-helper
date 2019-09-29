@@ -20,7 +20,9 @@ func Eligibility(c *cli.Context, logger *log.Logger) error {
 		return err
 	}
 
-	matches, err := helpers.FilteredClientList(nomadClient, c.Parent(), logger)
+	filters := helpers.ClientFilterFromCLI(c.Parent())
+
+	matches, err := helpers.FilteredClientList(nomadClient, false, filters, logger)
 	if err != nil {
 		return err
 	}

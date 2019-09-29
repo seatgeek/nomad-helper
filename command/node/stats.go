@@ -54,6 +54,4 @@ func Stats(c *cli.Context) error {
 	}
 
 	return fmt.Errorf("nomad-helper node %sbreakdown %s", flags, strings.Join(args, " "))
-
-	// return nil
 }

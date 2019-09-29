@@ -1,71 +1,66 @@
 package node
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
+	"io"
 	"sort"
 	"strings"
 
 	"github.com/hashicorp/nomad/api"
 	"github.com/olekukonko/tablewriter"
 	"github.com/seatgeek/nomad-helper/helpers"
-	log "github.com/sirupsen/logrus"
-	cli "github.com/urfave/cli"
 )
 
-func Breakdown(c *cli.Context, logger *log.Logger) error {
-	// Get list of CLI arguments we should use as dimensions
-	dimensions := getCLIArgs(c)
-
-	// We require at minimum one field
-	if len(dimensions) == 0 {
-		logger.Fatal("Missing argument for list of fields to use as dimensions")
-	}
-
-	// Collect Node data from the Nomad cluster
-	nodes, err := getData(c, logger)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	// Create a prop reader for results
-	propReader := helpers.NewMetaPropReader(dimensions...)
-
+func breakdownResponse(format string, nodes []*api.Node, propReader helpers.PropReader) (string, error) {
 	// Compute result
-	result := computeStruct(nodes, propReader)
+	result, err := computeStruct(nodes, propReader)
+	if err != nil {
+		return "", err
+	}
 
 	// Create output based on requested format
-	switch c.String("output-format") {
+	switch format {
 	case "table":
-		printTable(result, propReader)
+		var b bytes.Buffer
+		writer := bufio.NewWriter(&b)
+		printTable(result, propReader, writer)
+		writer.Flush()
+
+		return b.String(), nil
 
 	case "json":
 		jsonText, err := json.Marshal(result)
 		if err != nil {
-			panic(err)
+			return "", err
 		}
-		fmt.Println(string(jsonText))
+
+		return string(jsonText), nil
 
 	case "json-pretty":
 		jsonText, err := json.MarshalIndent(result, "", "  ")
 		if err != nil {
-			panic(err)
+			return "", err
 		}
-		fmt.Println(string(jsonText))
+
+		return string(jsonText), nil
 
 	default:
-		return fmt.Errorf("Invalid output-format: %s", c.String("output-format"))
+		return "", fmt.Errorf("Invalid output-format: %s", format)
 	}
-
-	return nil
 }
 
-func computeStruct(nodes []*api.Node, reader helpers.PropReader) []*result {
+func computeStruct(nodes []*api.Node, reader helpers.PropReader) ([]*result, error) {
 	m := make([]*result, 0)
 
 	for _, node := range nodes {
-		names := reader.Read(node)
+		names, err := reader.Read(node)
+		if err != nil {
+			return nil, err
+		}
+
 		key := strings.Join(names, ".")
 
 		if v, ok := get(m, key); ok {
@@ -84,7 +79,7 @@ func computeStruct(nodes []*api.Node, reader helpers.PropReader) []*result {
 		return m[i].Key < m[j].Key
 	})
 
-	return m
+	return m, nil
 }
 
 type result struct {
@@ -93,8 +88,8 @@ type result struct {
 	Value int      `json:"value"`
 }
 
-func printTable(m []*result, reader helpers.PropReader) {
-	table := tablewriter.NewWriter(os.Stdout)
+func printTable(m []*result, reader helpers.PropReader, writer io.Writer) {
+	table := tablewriter.NewWriter(writer)
 	table.SetAutoMergeCells(true)
 	table.SetRowLine(true)
 

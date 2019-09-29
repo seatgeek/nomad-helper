@@ -2,23 +2,65 @@ package helpers
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Jeffail/tunny"
 	"github.com/hashicorp/nomad/api"
+	"github.com/karlseguin/ccache"
 	"github.com/schollz/progressbar/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
 var (
-	nodeCache = make(map[string]*api.Node)
+	nodeCache = ccache.New(ccache.Configure().MaxSize(5000).ItemsToPrune(10))
 	stderrLog *log.Logger
-	cacheLock sync.RWMutex
 )
+
+type ClientFilter struct {
+	Attribute   []string
+	Class       string
+	Eligibility string
+	Meta        []string
+	NOOP        bool
+	Percent     int
+	Prefix      string
+	Version     string
+}
+
+func ClientFilterFromCLI(c *cli.Context) ClientFilter {
+	filter := ClientFilter{
+		Attribute:   DeleteEmpty(c.StringSlice("filter-attribute")),
+		Class:       c.String("filter-class"),
+		Eligibility: c.String("filter-eligibility"),
+		Meta:        DeleteEmpty(c.StringSlice("filter-meta")),
+		NOOP:        c.Bool("noop"),
+		Percent:     c.Int("percent"),
+		Prefix:      c.String("filter-prefix"),
+		Version:     c.String("filter-version"),
+	}
+
+	return filter
+}
+
+func ClientFilterFromWeb(r *http.Request) ClientFilter {
+	filter := ClientFilter{
+		Attribute:   DeleteEmpty(strings.Split(r.URL.Query().Get("filter-attribute"), ",")),
+		Class:       r.URL.Query().Get("filter-class"),
+		Eligibility: r.URL.Query().Get("filter-eligibility"),
+		Meta:        DeleteEmpty(strings.Split(r.URL.Query().Get("filter-meta"), ",")),
+		Percent:     100,
+		Prefix:      r.URL.Query().Get("filter-prefix"),
+		Version:     r.URL.Query().Get("filter-version"),
+	}
+
+	return filter
+}
 
 func init() {
 	// We make an logger that _always_ print to stderr to ensure CLI calls like
@@ -28,26 +70,23 @@ func init() {
 	stderrLog.Out = os.Stderr
 }
 
-func FilteredClientList(client *api.Client, c *cli.Context, logger *log.Logger) ([]*api.Node, error) {
+func FilteredClientList(client *api.Client, progress bool, filter ClientFilter, logger *log.Logger) ([]*api.Node, error) {
 	stderrLog.SetLevel(logger.GetLevel())
 
 	stderrLog.Info("Finding eligible nodes")
-	nodes, _, err := client.Nodes().List(&api.QueryOptions{Prefix: c.String("filter-prefix")})
+	nodes, _, err := client.Nodes().List(&api.QueryOptions{Prefix: filter.Prefix})
 	if err != nil {
 		return nil, err
 	}
 
 	// Configure progressbar
-	bar := progressbar.NewOptions(len(nodes), progressbar.OptionSetWriter(os.Stderr))
-	if !c.Bool("no-progress") {
-		bar.RenderBlank()
-		defer func() {
-			bar.Finish()
-		}()
+	var bar *progressbar.ProgressBar
+	if progress {
+		bar = progressbar.NewOptions(len(nodes), progressbar.OptionSetWriter(os.Stderr))
 	}
 
 	// Configure worker pool
-	pool := tunny.NewFunc(runtime.NumCPU()*2, readNodeWorker(c, bar, client))
+	pool := tunny.NewFunc(runtime.NumCPU()*2, readNodeWorker(filter, client))
 	defer pool.Close()
 
 	// Lucks & wait groups
@@ -64,6 +103,10 @@ func FilteredClientList(client *api.Client, c *cli.Context, logger *log.Logger) 
 		go func(c *api.NodeListStub) {
 			defer wg.Done()
 
+			if bar != nil {
+				defer bar.Add(1)
+			}
+
 			r := pool.Process(c)
 			if r == nil {
 				return
@@ -79,7 +122,7 @@ func FilteredClientList(client *api.Client, c *cli.Context, logger *log.Logger) 
 	wg.Wait()
 
 	// Complete progressbar if needed
-	if !c.Bool("no-progress") {
+	if progress {
 		bar.Finish()
 		fmt.Fprintln(os.Stderr, "")
 	}
@@ -87,13 +130,13 @@ func FilteredClientList(client *api.Client, c *cli.Context, logger *log.Logger) 
 	stderrLog.Infof("Found %d matched nodes", len(matches))
 
 	// only work on specific percent of nodes
-	if percent := c.Int("percent"); percent > 0 && percent < 100 {
+	if percent := filter.Percent; percent > 0 && percent < 100 {
 		stderrLog.Infof("Only %d percent of nodes should be used", percent)
 		matches = matches[0 : len(matches)*percent/100]
 	}
 
 	// noop mode will fail the matching to prevent any further processing
-	if c.BoolT("noop") {
+	if filter.NOOP {
 		for _, node := range matches {
 			stderrLog.Infof("Node %s matched!", node.Name)
 		}
@@ -103,15 +146,9 @@ func FilteredClientList(client *api.Client, c *cli.Context, logger *log.Logger) 
 	return matches, nil
 }
 
-func readNodeWorker(c *cli.Context, bar *progressbar.ProgressBar, client *api.Client) func(payload interface{}) interface{} {
+func readNodeWorker(filter ClientFilter, client *api.Client) func(payload interface{}) interface{} {
 	return func(payload interface{}) interface{} {
 		nodeStub := payload.(*api.NodeListStub)
-
-		defer func() {
-			if !c.Bool("no-progress") {
-				bar.Add(1)
-			}
-		}()
 
 		// only consider nodes that is ready
 		if nodeStub.Status != "ready" {
@@ -120,19 +157,19 @@ func readNodeWorker(c *cli.Context, bar *progressbar.ProgressBar, client *api.Cl
 		}
 
 		// only consider nodes with the right node class
-		if class := c.String("filter-class"); class != "" && nodeStub.NodeClass != class {
+		if class := filter.Class; class != "" && nodeStub.NodeClass != class {
 			stderrLog.Debugf("Node %s class '%s' do not match expected value '%s'", nodeStub.Name, nodeStub.NodeClass, class)
 			return nil
 		}
 
 		// only consider nodes with the right nomad version
-		if version := c.String("filter-version"); version != "" && nodeStub.Version != version {
+		if version := filter.Version; version != "" && nodeStub.Version != version {
 			stderrLog.Debugf("Node %s version '%s' do not match expected node version '%s'", nodeStub.Name, nodeStub.Version, version)
 			return nil
 		}
 
 		// only consider nodes with the right eligibility
-		if eligibility := c.String("filter-eligibility"); eligibility != "" && nodeStub.SchedulingEligibility != eligibility {
+		if eligibility := filter.Eligibility; eligibility != "" && nodeStub.SchedulingEligibility != eligibility {
 			stderrLog.Debugf("Node %s eligibility '%s' do not match expected node eligibility '%s'", nodeStub.Name, nodeStub.SchedulingEligibility, eligibility)
 			return nil
 		}
@@ -145,7 +182,7 @@ func readNodeWorker(c *cli.Context, bar *progressbar.ProgressBar, client *api.Cl
 		}
 
 		// filter by client meta keys
-		if meta := c.StringSlice("filter-meta"); len(meta) > 0 {
+		if meta := filter.Meta; len(meta) > 0 {
 			for _, chunk := range meta {
 				split := strings.Split(chunk, "=")
 				if len(split) != 2 {
@@ -164,7 +201,7 @@ func readNodeWorker(c *cli.Context, bar *progressbar.ProgressBar, client *api.Cl
 		}
 
 		// filter by client attribute keys
-		if meta := c.StringSlice("filter-attribute"); len(meta) > 0 {
+		if meta := filter.Attribute; len(meta) > 0 {
 			for _, chunk := range meta {
 				split := strings.Split(chunk, "=")
 				if len(split) != 2 {
@@ -205,22 +242,18 @@ func getNodeAttributesProperty(node *api.Node, key string) string {
 }
 
 func lookupNode(nodeID string, client *api.Client) (*api.Node, error) {
-	cacheLock.RLock()
-	data, ok := nodeCache[nodeID]
-	cacheLock.RUnlock()
-
-	if !ok {
+	item, err := nodeCache.Fetch(nodeID, 1*time.Minute, func() (interface{}, error) {
 		node, _, err := client.Nodes().Info(nodeID, nil)
 		if err != nil {
 			return nil, err
 		}
 
-		cacheLock.Lock()
-		nodeCache[nodeID] = node
-		cacheLock.Unlock()
-
 		return node, nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
 
-	return data, nil
+	return item.Value().(*api.Node), nil
 }

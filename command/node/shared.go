@@ -19,7 +19,7 @@ func get(m []*result, name string) (*result, bool) {
 }
 
 func getCLIArgs(c *cli.Context) []string {
-	input := deleteEmpty(append([]string{c.Args().First()}, c.Args().Tail()...))
+	input := helpers.DeleteEmpty(append([]string{c.Args().First()}, c.Args().Tail()...))
 
 	result := []string{}
 	for _, key := range input {
@@ -29,23 +29,13 @@ func getCLIArgs(c *cli.Context) []string {
 	return input
 }
 
-func deleteEmpty(s []string) []string {
-	var r []string
-	for _, str := range s {
-		if str != "" {
-			r = append(r, str)
-		}
-	}
-	return r
-}
-
-func getData(c *cli.Context, logger *log.Logger) ([]*api.Node, error) {
+func getData(filters helpers.ClientFilter, logger *log.Logger, progress bool) ([]*api.Node, error) {
 	nomadClient, err := api.NewClient(api.DefaultConfig())
 	if err != nil {
 		return nil, err
 	}
 
-	nodes, err := helpers.FilteredClientList(nomadClient, c.Parent(), logger)
+	nodes, err := helpers.FilteredClientList(nomadClient, progress, filters, logger)
 	if err != nil {
 		return nil, err
 	}

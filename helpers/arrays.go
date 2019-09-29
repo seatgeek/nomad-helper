@@ -19,3 +19,13 @@ func ContainsInt(match int, haystack []int) bool {
 
 	return false
 }
+
+func DeleteEmpty(s []string) []string {
+	var r []string
+	for _, str := range s {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
+}

@@ -45,8 +45,10 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 		return err
 	}
 
+	filters := helpers.ClientFilterFromCLI(c.Parent())
+
 	// find nodes to target
-	matches, err := helpers.FilteredClientList(nomadClient, c.Parent(), logger)
+	matches, err := helpers.FilteredClientList(nomadClient, false, filters, logger)
 	if err != nil {
 		return err
 	}

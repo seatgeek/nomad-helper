@@ -12,6 +12,7 @@ import (
 	"github.com/seatgeek/nomad-helper/command/node"
 	"github.com/seatgeek/nomad-helper/command/reevaluate"
 	"github.com/seatgeek/nomad-helper/command/scale"
+	"github.com/seatgeek/nomad-helper/command/server"
 	"github.com/seatgeek/nomad-helper/command/tail"
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli"
@@ -47,12 +48,39 @@ var filterHelpText = `
 		--filter-version 0.8.4                                     Filter nodes by their Nomad version 0.8.4
 `
 
+var filterWebHelpText = `
+	<bold,underline>** Filters **<reset>
+
+	Filters are always passed as HTTP query arguments, order doesn't matter
+
+		/?filter-attribute=driver.docker.version=17.09.0-ce        Filter nodes by their attribute key/value like 'driver.docker.version=17.09.0-ce'.
+		/?filter-class=batch-jobs                                  Filter nodes by their node class batch-jobs
+		/?filter-eligibility=eligible/ineligible                   Filter nodes by their eligibility status eligible/ineligible
+		/?filter-meta=aws.instance.availability-zone=us-east-1e    Filter nodes by their meta key/value like 'aws.instance.availability-zone=us-east-1e'.
+		/?filter-prefix=ef30d57c                                   Filter nodes by their ID with prefix matching ef30d57c
+		/?filter-version=0.8.4                                     Filter nodes by their Nomad version 0.8.4
+`
+
 var helpExamples = `
 	<bold,underline>** Examples **<reset>
 
 		* nomad-helper node __COMMAND__ <bold>class status<reset>
 		* nomad-helper node __COMMAND__ <bold>attribute<reset,underline>.nomad.version<reset,bold> attribute.<reset,underline>driver.docker<reset>
 		* nomad-helper node __COMMAND__ <bold>meta.<reset,underline>aws.instance.region<reset,bold> attribute.<reset,underline>nomad.version<reset>
+`
+
+var helpWebExamples = `
+	<bold,underline>** Examples **<reset>
+
+	Fields are always passed as HTTP path, and processed in order
+
+		* /help
+		* /help/node/breakdown
+		* /help/node/list
+		* /help/[command]/[subcommand]
+		* /node/[breakdown|list]/<bold>class<reset>/<bold>status<reset>
+		* /node/[breakdown|list]/<bold>meta.<reset,underline>aws.instance.region<reset>/<bold>attribute.<reset,underline>nomad.version<reset>
+		* /node/[breakdown|list]/<bold>attribute<reset,underline>.nomad.version<reset>/<bold>attribute.<reset,underline>driver.docker<reset>
 `
 
 var filterFlags = []cli.Flag{
@@ -269,7 +297,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return node.List(c, log.StandardLogger())
+						return node.ListCLI(c, log.StandardLogger())
 					},
 				},
 				{
@@ -287,7 +315,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return node.Breakdown(c, log.StandardLogger())
+						return node.BreakdownCLI(c, log.StandardLogger())
 					},
 				},
 			},
@@ -362,6 +390,20 @@ func main() {
 				return gc.App()
 			},
 		},
+		{
+			Name:        "server",
+			Usage:       "Run a webserver exposing various endpoints",
+			Description: rndr.MustRender(fieldHelpText) + rndr.MustRender(filterWebHelpText) + rndr.MustRender(strings.ReplaceAll(helpWebExamples, "__COMMAND__", "breakdown")),
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "listen",
+					Value: "0.0.0.0:8000",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				return server.Run(app, c, log.StandardLogger())
+			},
+		},
 	}
 	app.Before = func(c *cli.Context) error {
 		// convert the human passed log level into logrus levels
@@ -369,6 +411,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		log.SetLevel(level)
 		return nil
 	}
