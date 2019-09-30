@@ -168,7 +168,12 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				return attach.Run(c)
+				err := attach.Run(c)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				return err
 			},
 		},
 		{
@@ -207,7 +212,12 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				return tail.Run(c)
+				err := tail.Run(c)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				return err
 			},
 		},
 		{
@@ -262,7 +272,12 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return node.Drain(c, log.StandardLogger())
+						err := node.Drain(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
 					},
 				},
 				{
@@ -280,7 +295,12 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return node.Eligibility(c, log.StandardLogger())
+						err := node.Eligibility(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
 					},
 				},
 				{
@@ -297,7 +317,12 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return node.ListCLI(c, log.StandardLogger())
+						err := node.ListCLI(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
 					},
 				},
 				{
@@ -315,7 +340,12 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return node.BreakdownCLI(c, log.StandardLogger())
+						err := node.BreakdownCLI(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
 					},
 				},
 			},
@@ -333,7 +363,12 @@ func main() {
 							return fmt.Errorf("Missing file name")
 						}
 
-						return scale.ExportCommand(configFile)
+						err := scale.ExportCommand(configFile)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
 					},
 				},
 				{
@@ -345,7 +380,12 @@ func main() {
 							return fmt.Errorf("Missing file name")
 						}
 
-						return scale.ImportCommand(configFile)
+						err := scale.ImportCommand(configFile)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
 					},
 				},
 			},
