@@ -28,10 +28,10 @@ func ListWeb(logger *log.Logger, r *http.Request) (string, error) {
 	// Create a prop reader for results
 	propReader := helpers.NewMetaPropReader(fields...)
 
-	// We default to JSON
+	// Decide on output format
 	format := r.URL.Query().Get("output-format")
 	if format == "" {
-		format = "json"
+		format = "table"
 	}
 
 	return listResponse(format, nodes, propReader)

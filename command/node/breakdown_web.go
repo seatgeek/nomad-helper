@@ -28,6 +28,12 @@ func BreakdownWeb(logger *log.Logger, r *http.Request) (string, error) {
 	// Create a prop reader for results
 	propReader := helpers.NewMetaPropReader(dimensions...)
 
+	// Decide on output format
+	format := r.URL.Query().Get("output-format")
+	if format == "" {
+		format = "table"
+	}
+
 	// Output result
-	return breakdownResponse(r.URL.Query().Get("output-format"), nodes, propReader)
+	return breakdownResponse(format, nodes, propReader)
 }
