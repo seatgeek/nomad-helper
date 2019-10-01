@@ -77,6 +77,7 @@ var helpWebExamples = `
 		* /help
 		* /help/node/breakdown
 		* /help/node/list
+		* /help/node/discover
 		* /help/[command]/[subcommand]
 		* /node/[breakdown|list]/<bold>class<reset>/<bold>status<reset>
 		* /node/[breakdown|list]/<bold>meta.<reset,underline>aws.instance.region<reset>/<bold>attribute.<reset,underline>nomad.version<reset>
@@ -327,7 +328,6 @@ func main() {
 				},
 				{
 					Name:        "breakdown",
-					Aliases:     []string{"stats"},
 					Usage:       `Break down (count) how many Nomad clients that match a list of key properties`,
 					UsageText:   "nomad-helper node [filters...] breakdown [command options] [keys...]",
 					Description: rndr.MustRender(fieldHelpText) + rndr.MustRender(filterHelpText) + rndr.MustRender(strings.ReplaceAll(helpExamples, "__COMMAND__", "breakdown")),
@@ -341,6 +341,26 @@ func main() {
 					},
 					Action: func(c *cli.Context) error {
 						err := node.BreakdownCLI(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
+					},
+				},
+				{
+					Name:      "discover",
+					Usage:     `Output the Nomad client Meta and Attribute fields present in your cluster`,
+					UsageText: "nomad-helper node [filters...] discover [command options]",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "output-format",
+							Value: "table",
+							Usage: `Either "table", "json" or "json-pretty"`,
+						},
+					},
+					Action: func(c *cli.Context) error {
+						err := node.DiscoverCLI(c, log.StandardLogger())
 						if err != nil {
 							log.Fatal(err)
 						}
@@ -436,8 +456,9 @@ func main() {
 			Description: rndr.MustRender(fieldHelpText) + rndr.MustRender(filterWebHelpText) + rndr.MustRender(strings.ReplaceAll(helpWebExamples, "__COMMAND__", "breakdown")),
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "listen",
-					Value: "0.0.0.0:8000",
+					Name:   "listen",
+					Value:  "0.0.0.0:8000",
+					EnvVar: "LISTEN",
 				},
 			},
 			Action: func(c *cli.Context) error {

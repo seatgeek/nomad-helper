@@ -19,10 +19,12 @@
             - [Examples](#examples-1)
         - [breakdown](#breakdown)
         - [list](#list)
+        - [discover](#discover)
     - [scale](#scale)
         - [export](#export)
         - [import](#import)
         - [Example Scale config](#example-scale-config)
+    - [server](#server)
     - [reevaluate-all](#reevaluate-all)
     - [gc](#gc)
 
@@ -295,6 +297,19 @@ OPTIONS:
    --output-format table, json or json-pretty  Either table, json or json-pretty (default: "table")
 ```
 
+### Discover
+
+```
+NAME:
+   nomad-helper node discover - Output the Nomad client Meta and Attribute fields present in your cluster
+
+USAGE:
+   nomad-helper node [filters...] discover [command options]
+
+OPTIONS:
+   --output-format value  Either "table", "json" or "json-pretty" (default: "table")
+```
+
 ## scale
 
 ```
@@ -352,6 +367,59 @@ jobs:
     api-es-3: 1
 ```
 
+## Server
+
+```
+NAME:
+   nomad-helper server - Run a webserver exposing various endpoints
+
+USAGE:
+   nomad-helper server [command options] [arguments...]
+
+DESCRIPTION:
+
+  ** Arguments **
+
+    * attribute.key will look up key in the "Attributes" Nomad client property
+    * class / nodeclass for the Nomad client "NodeClass" property
+    * datacenter / dc for the Nomad client "Datacenter" property
+    * drain for the Nomad client "Drain" property
+    * eligibility / schedulingeligibility for the Nomad client "SchedulingEligibility" property
+    * hostname is an alias for attribute.unique.hostname
+    * id for the Nomad client "ID" property
+    * ip / address / ip-address is alias for attribute.unique.network.ip-address
+    * meta.key will look up key in the "Meta" Nomad client configuration
+    * name for the Nomad client "Name" property
+    * status for the Nomad client "Status" property
+
+  ** Filters **
+
+  Filters are always passed as HTTP query arguments, order doesn't matter
+
+    /?filter-attribute=driver.docker.version=17.09.0-ce        Filter nodes by their attribute key/value like 'driver.docker.version=17.09.0-ce'.
+    /?filter-class=batch-jobs                                  Filter nodes by their node class batch-jobs
+    /?filter-eligibility=eligible/ineligible                   Filter nodes by their eligibility status eligible/ineligible
+    /?filter-meta=aws.instance.availability-zone=us-east-1e    Filter nodes by their meta key/value like 'aws.instance.availability-zone=us-east-1e'.
+    /?filter-prefix=ef30d57c                                   Filter nodes by their ID with prefix matching ef30d57c
+    /?filter-version=0.8.4                                     Filter nodes by their Nomad version 0.8.4
+
+  ** Examples **
+
+  Fields are always passed as HTTP path, and processed in order
+
+    * /help
+    * /help/node/breakdown
+    * /help/node/list
+    * /help/node/discover
+    * /help/[command]/[subcommand]
+    * /node/[breakdown|list]/class/status
+    * /node/[breakdown|list]/meta.aws.instance.region/attribute.nomad.version
+    * /node/[breakdown|list]/attribute.nomad.version/attribute.driver.docker
+
+
+OPTIONS:
+   --listen value  (default: "0.0.0.0:8000") [$LISTEN]
+```
 
 ## reevaluate-all
 

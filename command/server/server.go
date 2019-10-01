@@ -21,6 +21,7 @@ func Run(a *cli.App, c *cli.Context, logger *log.Logger) error {
 		w.Header().Set("Location", "/help")
 		w.WriteHeader(302)
 	})
+	r.Path("/node/discover").HandlerFunc(nodeDiscoverHandler)
 	r.PathPrefix("/node/breakdown").Handler(http.StripPrefix("/node/breakdown", http.HandlerFunc(nodeBreakdownHandler)))
 	r.PathPrefix("/node/list").Handler(http.StripPrefix("/node/list", http.HandlerFunc(nodeListHandler)))
 	r.PathPrefix("/help").Handler(http.StripPrefix("/help", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -106,7 +107,6 @@ func nodeBreakdownHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 	}
 
-	// w.Header().Set("Content-Length", fmt.Sprintf("%d", len(output)))
 	w.Write([]byte(output))
 }
 
@@ -132,7 +132,24 @@ func nodeListHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 	}
 
-	// w.Header().Set("Content-Length", fmt.Sprintf("%d", len(output)))
+	w.Write([]byte(output))
+}
+
+func nodeDiscoverHandler(w http.ResponseWriter, r *http.Request) {
+	output, err := node.DiscoverWeb(log.New(), r)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		w.WriteHeader(500)
+		return
+	}
+
+	switch r.Header.Get("output-format") {
+	case "table":
+		w.Header().Set("Content-Type", "text/html")
+	default:
+		w.Header().Set("Content-Type", "application/json")
+	}
+
 	w.Write([]byte(output))
 }
 

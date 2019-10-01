@@ -6,8 +6,10 @@ require (
 	github.com/Jeffail/tunny v0.0.0-20181108205650-4921fff29480
 	github.com/alecthomas/chroma v0.6.7
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
+	github.com/davecgh/go-spew v1.1.1
 	github.com/dgraph-io/ristretto v0.0.0-20190928180628-8acd55ed71b0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/fatih/structs v1.1.0
 	github.com/gorhill/cronexpr v0.0.0-20180427100037-88b0669f7d75 // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/hashicorp/consul/api v1.2.0 // indirect
