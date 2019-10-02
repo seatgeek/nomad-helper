@@ -8,10 +8,10 @@ import (
 	"github.com/hashicorp/nomad/api"
 	"github.com/seatgeek/nomad-helper/helpers"
 	log "github.com/sirupsen/logrus"
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
 )
 
-func Drain(c *cli.Context) error {
+func Drain(c *cli.Context, logger *log.Logger) error {
 	// Check that enable or disable is not set with monitor
 	if c.Bool("monitor") && (c.Bool("enable") || c.Bool("disable")) {
 		return fmt.Errorf("The -monitor flag cannot be used with the '-enable' or '-disable' flags")
@@ -34,6 +34,7 @@ func Drain(c *cli.Context) error {
 	if c.Bool("force") {
 		deadline = -1
 	}
+
 	if c.Bool("no-deadline") {
 		deadline = 0
 	}
@@ -44,8 +45,10 @@ func Drain(c *cli.Context) error {
 		return err
 	}
 
+	filters := helpers.ClientFilterFromCLI(c.Parent())
+
 	// find nodes to target
-	matches, err := helpers.FilteredClientList(nomadClient, c.Parent())
+	matches, err := helpers.FilteredClientList(nomadClient, false, filters, logger)
 	if err != nil {
 		return err
 	}
@@ -58,7 +61,7 @@ func Drain(c *cli.Context) error {
 	ctx := context.Background()
 
 	for _, node := range matches {
-		log.Infof("Node %s (class: %s / version: %s)", node.Name, node.NodeClass, node.Version)
+		log.Infof("Node %s (class: %s / version: %s)", node.Name, node.NodeClass, node.Attributes["nomad.version"])
 
 		// in monitor mode we don't do any change to node state
 		if c.Bool("monitor") {
@@ -98,7 +101,7 @@ func Drain(c *cli.Context) error {
 	return nil
 }
 
-func monitor(ctx context.Context, client *api.Client, node *api.NodeListStub, wg *sync.WaitGroup) {
+func monitor(ctx context.Context, client *api.Client, node *api.Node, wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
 

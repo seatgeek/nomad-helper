@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/nomad/api"
 	"github.com/mitchellh/colorstring"
 	"github.com/seatgeek/nomad-helper/helpers"
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
 )
 
 func Run(c *cli.Context) error {

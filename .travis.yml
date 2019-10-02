@@ -3,22 +3,25 @@ sudo: required
 language: go
 
 go:
-  - 1.10.1
+  - 1.13.1
 
 services:
   - docker
 
 cache:
   directories:
-    - vendor/
+    - $HOME/.cache/go-build
+    - $HOME/gopath/pkg/mod
 
 env:
   global:
     - CGO_ENABLED=0
+    - GO111MODULE=on
+    - GOPROXY=https://proxy.golang.org
     - GOBUILD="linux-amd64 windows-amd64 darwin-amd64"
 
 script:
-  - make -j dist
+  - make -j build
   - ls -la build
 
 after_success:

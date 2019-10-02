@@ -6,10 +6,10 @@ import (
 	"github.com/hashicorp/nomad/api"
 	"github.com/seatgeek/nomad-helper/helpers"
 	log "github.com/sirupsen/logrus"
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
 )
 
-func Eligibility(c *cli.Context) error {
+func Eligibility(c *cli.Context, logger *log.Logger) error {
 	// Check that we got either enable or disable, but not both.
 	if (c.Bool("enable") && c.Bool("disable")) || (!c.Bool("enable") && !c.Bool("disable")) {
 		return fmt.Errorf("Ethier the '-enable' or '-disable' flag must be set")
@@ -20,13 +20,15 @@ func Eligibility(c *cli.Context) error {
 		return err
 	}
 
-	matches, err := helpers.FilteredClientList(nomadClient, c.Parent())
+	filters := helpers.ClientFilterFromCLI(c.Parent())
+
+	matches, err := helpers.FilteredClientList(nomadClient, false, filters, logger)
 	if err != nil {
 		return err
 	}
 
 	for _, node := range matches {
-		log.Infof("Node %s (class: %s / version: %s)", node.Name, node.NodeClass, node.Version)
+		log.Infof("Node %s (class: %s / version: %s)", node.Name, node.NodeClass, node.Attributes["nomad.version"])
 
 		_, err := nomadClient.Nodes().ToggleEligibility(node.ID, c.Bool("enable"), nil)
 		if err != nil {
