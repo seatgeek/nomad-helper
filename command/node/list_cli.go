@@ -20,7 +20,7 @@ func ListCLI(c *cli.Context, logger *log.Logger) error {
 		fields = input
 	}
 
-	filters := helpers.ClientFilterFromCLI(c)
+	filters := helpers.ClientFilterFromCLI(c.Parent())
 
 	// Collect Node data from the Nomad cluster
 	nodes, err := getData(filters, logger, !c.BoolT("no-progress"))
