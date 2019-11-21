@@ -17,7 +17,7 @@ var ignoredNodeAttributes = map[string]interface{}{
 }
 
 func DiscoverCLI(c *cli.Context, logger *log.Logger) error {
-	filters := helpers.ClientFilterFromCLI(c)
+	filters := helpers.ClientFilterFromCLI(c.Parent())
 
 	data, err := discoverData(filters, logger, !c.BoolT("no-progress"))
 	if err != nil {

@@ -17,7 +17,7 @@ func BreakdownCLI(c *cli.Context, logger *log.Logger) error {
 		logger.Fatal("Missing argument for list of fields to use as dimensions")
 	}
 
-	filters := helpers.ClientFilterFromCLI(c)
+	filters := helpers.ClientFilterFromCLI(c.Parent())
 
 	// Collect Node data from the Nomad cluster
 	nodes, err := getData(filters, logger, !c.BoolT("no-progress"))
