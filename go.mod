@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/Jeffail/tunny v0.0.0-20181108205650-4921fff29480
-	github.com/alecthomas/chroma v0.6.7
+	github.com/alecthomas/chroma v0.7.0
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgraph-io/ristretto v0.0.0-20190928180628-8acd55ed71b0 // indirect
