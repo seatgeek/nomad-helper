@@ -26,7 +26,7 @@ require (
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 	github.com/mitchellh/hashstructure v1.0.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.1
-	github.com/schollz/progressbar/v2 v2.14.0
+	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/ugorji/go v0.0.0-20170620060102-0053ebfd9d0e // indirect
 	github.com/urfave/cli v1.22.1
