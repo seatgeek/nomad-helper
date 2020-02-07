@@ -29,7 +29,7 @@ require (
 	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/ugorji/go v0.0.0-20170620060102-0053ebfd9d0e // indirect
-	github.com/urfave/cli v1.22.1
+	github.com/urfave/cli v1.22.2
 	github.com/wsxiaoys/terminal v0.0.0-20160513160801-0940f3fc43a0 // indirect
 	golang.org/x/crypto v0.0.0-20190927123631-a832865fa7ad // indirect
 	gopkg.in/karlseguin/expect.v1 v1.0.1 // indirect
