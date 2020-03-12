@@ -224,7 +224,7 @@ func main() {
 		},
 		{
 			Name:  "job",
-			Usage: "node specific commands that act on all Nomad clients that match the filters provided, rather than a single node",
+			Usage: "job specific commands with a twist (see help)",
 			Flags: filterFlags,
 			Subcommands: []cli.Command{
 				{
@@ -241,7 +241,7 @@ func main() {
 						},
 						cli.BoolFlag{
 							Name:  "as-prefix",
-							Usage: "Treat the job name as a job prefix",
+							Usage: "Treat the job name as a job prefix (job name 'api-' would mean all jobs 'api-*' would be stopped)",
 						},
 					},
 					Action: func(c *cli.Context) error {
