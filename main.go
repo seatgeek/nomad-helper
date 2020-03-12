@@ -9,6 +9,7 @@ import (
 
 	"github.com/seatgeek/nomad-helper/command/attach"
 	"github.com/seatgeek/nomad-helper/command/gc"
+	"github.com/seatgeek/nomad-helper/command/job"
 	"github.com/seatgeek/nomad-helper/command/node"
 	"github.com/seatgeek/nomad-helper/command/reevaluate"
 	"github.com/seatgeek/nomad-helper/command/scale"
@@ -219,6 +220,39 @@ func main() {
 				}
 
 				return err
+			},
+		},
+		{
+			Name:  "job",
+			Usage: "node specific commands that act on all Nomad clients that match the filters provided, rather than a single node",
+			Flags: filterFlags,
+			Subcommands: []cli.Command{
+				{
+					Name:  "stop",
+					Usage: "Stop jobs in the cluster",
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "purge",
+							Usage: "Purge job",
+						},
+						cli.BoolFlag{
+							Name:  "dry",
+							Usage: "Dry run, just print actions",
+						},
+						cli.BoolFlag{
+							Name:  "as-prefix",
+							Usage: "Treat the job name as a job prefix",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						err := job.Stop(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
+					},
+				},
 			},
 		},
 		{
