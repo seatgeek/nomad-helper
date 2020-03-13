@@ -16,7 +16,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.1
 	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.4.2
-	github.com/urfave/cli v1.22.1
+	github.com/urfave/cli v1.22.3
 	github.com/wsxiaoys/terminal v0.0.0-20160513160801-0940f3fc43a0 // indirect
 	golang.org/x/sys v0.0.0-20190523142557-0e01d883c5c5 // indirect
 	gopkg.in/karlseguin/expect.v1 v1.0.1 // indirect
