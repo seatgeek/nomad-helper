@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/hashicorp/nomad/api"
-	nomadStructs "github.com/hashicorp/nomad/nomad/structs"
 	"github.com/seatgeek/nomad-helper/helpers"
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli"
@@ -163,9 +162,9 @@ func isAllocDone(client *api.Client, alloc *api.Allocation, logger *log.Entry, t
 	}
 
 	doneAllocStates := map[string]bool{
-		nomadStructs.AllocClientStatusComplete: true,
-		nomadStructs.AllocClientStatusFailed:   true,
-		nomadStructs.AllocClientStatusLost:     true,
+		"complete": true,
+		"failed":   true,
+		"lost":     true,
 	}
 
 	return doneAllocStates[allocation.ClientStatus]

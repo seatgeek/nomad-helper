@@ -402,6 +402,26 @@ func main() {
 						return err
 					},
 				},
+				{
+					Name:      "empty",
+					Usage:     `List nodes that only have system jobs running`,
+					UsageText: "nomad-helper node [filters...] empty [command options]",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "output-format",
+							Value: "table",
+							Usage: `Either "table", "json" or "json-pretty"`,
+						},
+					},
+					Action: func(c *cli.Context) error {
+						err := node.Empty(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
+					},
+				},
 			},
 		},
 		{

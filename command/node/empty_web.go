@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func ListWeb(logger *log.Logger, r *http.Request) (string, error) {
+func EmptytWeb(logger *log.Logger, r *http.Request) (string, error) {
 	// Get list of CLI arguments we should use as dimensions
 	fields := helpers.DeleteEmpty(strings.Split(r.URL.Path, "/"))
 	if len(fields) == 0 {
@@ -25,6 +25,11 @@ func ListWeb(logger *log.Logger, r *http.Request) (string, error) {
 		return "", err
 	}
 
+	emptyNodes, err := filterForEmpty(nodes)
+	if err != nil {
+		return "", err
+	}
+
 	// Create a prop reader for results
 	propReader := helpers.NewMetaPropReader(fields...)
 
@@ -34,5 +39,5 @@ func ListWeb(logger *log.Logger, r *http.Request) (string, error) {
 		format = "table"
 	}
 
-	return listResponse(format, nodes, propReader)
+	return listResponse(format, emptyNodes, propReader)
 }
