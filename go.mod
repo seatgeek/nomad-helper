@@ -7,7 +7,7 @@ require (
 	github.com/alecthomas/chroma v0.7.1
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/gorilla/mux v1.7.3
+	github.com/gorilla/mux v1.7.4
 	github.com/hashicorp/nomad/api v0.0.0-20200313133326-8c671b657b24
 	github.com/karlseguin/ccache v2.0.3+incompatible
 	github.com/karlseguin/expect v1.0.1 // indirect
