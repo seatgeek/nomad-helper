@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/Jeffail/tunny v0.0.0-20181108205650-4921fff29480
-	github.com/alecthomas/chroma v0.7.1
+	github.com/alecthomas/chroma v0.7.2
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/gorilla/mux v1.7.3
