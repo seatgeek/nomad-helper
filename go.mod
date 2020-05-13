@@ -21,5 +21,5 @@ require (
 	golang.org/x/sys v0.0.0-20190523142557-0e01d883c5c5 // indirect
 	gopkg.in/karlseguin/expect.v1 v1.0.1 // indirect
 	gopkg.in/workanator/go-ataman.v1 v1.0.0-20170925060702-9a33b5b3bca7
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v2 v2.3.0
 )
