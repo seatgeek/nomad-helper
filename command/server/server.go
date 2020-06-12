@@ -70,9 +70,7 @@ func Run(a *cli.App, c *cli.Context, logger *log.Logger) error {
 			<head>
 				<style>__STYLE__</style>
 			</head>
-			<body>
-				<div class=term-container>__HTML__</div>
-			</body>
+			<body>__HTML__</body>
 		</html>`
 
 		html = strings.Replace(html, "__STYLE__", htmlStylesheet, -1)
@@ -174,23 +172,22 @@ func nodeDiscoverHandler(w http.ResponseWriter, r *http.Request) {
 
 // Copied from https://github.com/buildkite/terminal-to-html/blob/master/assets/terminal.css
 const htmlStylesheet = `
-.term-container {
+body {
   background: #171717;
-  border-radius: 5px;
   color: white;
   word-break: break-word;
   overflow-wrap: break-word;
   font-family: "SFMono-Regular", Monaco, Menlo, Consolas, "Liberation Mono", Courier, monospace;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 20px;
   padding: 14px 18px;
   white-space: pre-wrap;
 }
 
-.term-container img { max-width: 100%; }
+img { max-width: 100%; }
 
-.term a { color: inherit; text-decoration: underline; text-decoration-style: dashed; }
-.term a:hover { color: #2882F9 }
+a { color: inherit; text-decoration: underline; text-decoration-style: dashed; }
+a:hover { color: #2882F9 }
 
 @keyframes blink-animation {
   to {
