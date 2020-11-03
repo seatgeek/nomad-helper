@@ -7,8 +7,11 @@ require (
 	github.com/alecthomas/chroma v0.7.1
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/gorhill/cronexpr v0.0.0-20180427100037-88b0669f7d75 // indirect
 	github.com/gorilla/mux v1.7.3
-	github.com/hashicorp/nomad/api v0.0.0-20200313133326-8c671b657b24
+	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/hashicorp/cronexpr v1.1.1 // indirect
+	github.com/hashicorp/nomad/api v0.0.0-20201102214658-c6f410f5512d
 	github.com/karlseguin/ccache v2.0.3+incompatible
 	github.com/karlseguin/expect v1.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
