@@ -79,9 +79,9 @@ func Move(c *cli.Context, logger *log.Logger) error {
 				return
 			}
 			existingConstraintAppended := false
-			for _, constraint := range job.Constraints {
+			for constraintIndex, constraint := range job.Constraints {
 				if constraint.LTarget == newConstraint.LTarget {
-					constraint = newConstraint
+					job.Constraints[constraintIndex] = newConstraint
 					existingConstraintAppended = true
 				}
 			}
