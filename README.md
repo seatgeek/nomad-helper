@@ -20,6 +20,9 @@
         - [breakdown](#breakdown)
         - [list](#list)
         - [discover](#discover)
+    - [job](#job)
+        - [stop](#stop)
+        - [move](#move)
     - [scale](#scale)
         - [export](#export)
         - [import](#import)
@@ -309,6 +312,63 @@ USAGE:
 OPTIONS:
    --output-format value  Either "table", "json" or "json-pretty" (default: "table")
 ```
+
+
+## job
+
+job specific commands
+
+```
+NAME:
+   nomad-helper job - job specific commands with a twist
+
+USAGE:
+   nomad-helper job stop [command options] [arguments...]
+
+COMMANDS:
+     stop   Stop will stop the job with the ability to purge the job from the nomad cluster
+     move   Move will add/append a constraint to the job that will resolve to moving the job
+
+OPTIONS:
+   --help, -h                                                 show help
+```
+
+### stop
+
+```
+USAGE:
+   nomad-helper job stop [job_name] [command options]
+
+OPTIONS:
+   --as-prefix  Filter jobs by their name with prefix matching api-
+   --dry        Only output jobs that would be stopped, don't do any modifications
+```
+
+#### Examples
+
+- `nomad-helper job stop api`
+- `nomad-helper job stop api --as-prefix`
+- `nomad-helper job stop api --as-prefix --dry`
+
+
+### move
+
+```
+USAGE:
+   nomad-helper job stop [job_name] [command options]
+
+OPTIONS:
+   --as-prefix  Filter jobs by their name with prefix matching api-
+   --constraint Constraint attribute
+   --operand    Constraint operator
+   --value      Constraint value
+   --dry        Only output jobs that would be stopped, don't do any modifications
+```
+
+#### Examples
+
+- `job move api --constraint meta.aws.ami-version --operand = --value 1.9.1 --exclude core`
+- `job move api --as-prefix --constraint meta.aws.ami-version --operand = --value 1.9.1 --exclude core`
 
 ## scale
 
