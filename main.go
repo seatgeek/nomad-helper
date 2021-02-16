@@ -343,6 +343,22 @@ func main() {
 							Name:  "no-progress",
 							Usage: "Do not show progress bar",
 						},
+						cli.BoolFlag{
+							Name:  "with-benefits",
+							Usage: "Instead of draining the node in a regular way move the jobs to specific constraints",
+						},
+						cli.StringFlag{
+							Name:  "constraint",
+							Usage: "Constraint attribute",
+						},
+						cli.StringFlag{
+							Name:  "operand",
+							Usage: "operator",
+						},
+						cli.StringFlag{
+							Name:  "value",
+							Usage: "value of constraint to check",
+						},
 					},
 					Action: func(c *cli.Context) error {
 						err := node.Drain(c, log.StandardLogger())

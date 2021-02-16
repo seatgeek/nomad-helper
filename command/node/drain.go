@@ -3,31 +3,45 @@ package node
 import (
 	"context"
 	"fmt"
-	"sync"
-
 	"github.com/hashicorp/nomad/api"
+	nomadStructs "github.com/hashicorp/nomad/nomad/structs"
 	"github.com/seatgeek/nomad-helper/helpers"
 	log "github.com/sirupsen/logrus"
-	cli "github.com/urfave/cli"
+	"github.com/urfave/cli"
+	"sync"
+	"time"
 )
 
 func Drain(c *cli.Context, logger *log.Logger) error {
 	// Check that enable or disable is not set with monitor
 	if c.Bool("monitor") && (c.Bool("enable") || c.Bool("disable")) {
-		return fmt.Errorf("The -monitor flag cannot be used with the '-enable' or '-disable' flags")
+		return fmt.Errorf("-monitor flag cannot be used with the '-enable' or '-disable' flags")
 	}
 
-	// Check that we got either enable or disable, but not both.
-	if (c.Bool("enable") && c.Bool("disable")) || (!c.Bool("monitor") && !c.Bool("enable") && !c.Bool("disable")) {
-		return fmt.Errorf("Ethier the '-enable' or '-disable' flag must be set, unless using '-monitor'")
-	}
-
+	/*	// Check that we got either enable or disable, but not both.
+		if c.Bool("with-benefits") || ((c.Bool("enable") && c.Bool("disable")) || (!c.Bool("monitor") && !c.Bool("enable") && !c.Bool("disable"))) {
+			return fmt.Errorf("ethier the '-enable','-disable' or '-with-benefits' flag must be set, unless using '-monitor'")
+		}
+	*/
 	// Validate a compatible set of flags were set
 	if c.Bool("disable") && (c.Bool("force") || c.Bool("no-deadline") || c.Bool("ignore-system")) {
 		return fmt.Errorf("-disable can't be combined with flags configuring drain strategy")
 	}
 	if c.Bool("force") && c.Bool("no-deadline") {
 		return fmt.Errorf("-force and -no-deadline are mutually exclusive")
+	}
+	newConstraint := &api.Constraint{}
+	if c.Bool("with-benefits") {
+		if c.String("constraint") == "" {
+			return fmt.Errorf("with-benefits selected, must provide new constrain name")
+		}
+		if c.String("operand") == "" {
+			return fmt.Errorf("with-benefits selected, must provide new constrain name")
+		}
+		if c.String("value") == "" {
+			return fmt.Errorf("with-benefits selected, must provide new constrain name")
+		}
+		newConstraint = api.NewConstraint(fmt.Sprintf("${%s}", c.String("constraint")), c.String("operand"), c.String("value"))
 	}
 
 	deadline := c.Duration("deadline")
@@ -54,7 +68,7 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 	}
 
 	if len(matches) == 0 {
-		return fmt.Errorf("Could not find any nodes matching provided filters")
+		return fmt.Errorf("could not find any nodes matching provided filters")
 	}
 
 	var wg sync.WaitGroup
@@ -62,6 +76,51 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 
 	for _, node := range matches {
 		log.Infof("Node %s (class: %s / version: %s)", node.Name, node.NodeClass, node.Attributes["nomad.version"])
+		if c.Bool("with-benefits") {
+			log.Infof("Drain mode with benefits selected, marking node as ineligible and starting to move the jobs to the specified constraint")
+			_, err := nomadClient.Nodes().ToggleEligibility(node.ID, false, nil)
+			if err != nil {
+				log.Errorf("Error updating scheduling eligibility for %s: %s", node.Name, err)
+				continue
+			}
+			// Bring the allocations running on the node
+			nodeAllocations, _, err := nomadClient.Nodes().Allocations(node.ID, nil)
+			if err != nil {
+				log.Errorf("Error updating scheduling eligibility for %s: %s", node.Name, err)
+				continue
+			}
+
+			for _, allocation := range nodeAllocations {
+				if *allocation.Job.Type != "service" {
+					log.Infof("Skipping %s because it's not a service job", allocation.JobID)
+					continue
+				}
+
+				log.Infof("Allocation %s, for job %s", allocation.ID, allocation.JobID)
+
+				allocationJob := allocation.Job
+				existingConstraintAppended := false
+				for taskGroupIndex, taskGroup := range allocationJob.TaskGroups {
+					if *taskGroup.Name == allocation.TaskGroup {
+						for constraintIndex, constraint := range taskGroup.Constraints {
+							if constraint.LTarget == newConstraint.LTarget {
+								allocationJob.TaskGroups[taskGroupIndex].Constraints[constraintIndex] = newConstraint
+								existingConstraintAppended = true
+							}
+						}
+						if !existingConstraintAppended {
+							allocationJob.TaskGroups[taskGroupIndex].Constrain(newConstraint)
+						}
+					}
+				}
+				_, _, err = nomadClient.Jobs().Register(allocationJob, nil)
+				if err != nil {
+					return fmt.Errorf("failed to move taskgroup %s for job %s: %s", allocation.TaskGroup, allocation.JobID, err)
+				}
+				log.Infof("Job %s was successfully moved!", *allocationJob.ID)
+			}
+			continue
+		}
 
 		// in monitor mode we don't do any change to node state
 		if c.Bool("monitor") {

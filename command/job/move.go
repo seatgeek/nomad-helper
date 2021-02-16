@@ -108,6 +108,10 @@ func Move(c *cli.Context, logger *log.Logger) error {
 				return
 			}
 			_, _, err = nomadClient.Jobs().Register(job, nil)
+			if err != nil {
+				log.Errorf("failed to update job %s: %s", jobName, err)
+				return
+			}
 			log.Infof("Job %s was successfully moved!", name)
 		}(jobName)
 	}
