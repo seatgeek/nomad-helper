@@ -50,11 +50,9 @@ func Move(c *cli.Context, logger *log.Logger) error {
 		}
 
 		for _, job := range jobs {
-			if excludeFilter := c.String("exclude"); excludeFilter != "" {
-				if strings.Contains(job.Name, excludeFilter) {
-					log.Infof("Excluding job %s because it's name matched the exclude filter", job.Name)
-					continue
-				}
+			if excludeFilter := c.String("exclude"); excludeFilter != "" && strings.Contains(job.Name, excludeFilter) {
+				log.Infof("Excluding job %s because it's name matched the exclude filter", job.Name)
+				continue
 			}
 			jobsToMove = append(jobsToMove, job.ID)
 		}
@@ -118,7 +116,6 @@ func Move(c *cli.Context, logger *log.Logger) error {
 
 	return nil
 }
-
 
 // Everything below is shamelessly borrowed from https://github.com/hashicorp/nomad/blob/master/command/job_plan.go
 
