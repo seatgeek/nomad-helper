@@ -326,7 +326,7 @@ USAGE:
    nomad-helper job stop [command options] [arguments...]
 
 COMMANDS:
-     stop   Stop will stop the job from with ability to purge from the nomad cluster
+     stop   Stop will stop the job with the ability to purge the job from the nomad cluster
      move   Move will add/append a constraint to the job that will resolve to moving the job
 
 OPTIONS:
