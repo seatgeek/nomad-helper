@@ -86,7 +86,7 @@ func Move(c *cli.Context, logger *log.Logger) error {
 				}
 			}
 			if !existingConstraintAppended {
-				job.Constraints = append(job.Constraints, newConstraint)
+				job.Constrain(newConstraint)
 			}
 			planResponse, _, err := nomadClient.Jobs().Plan(job, true, nil)
 			if err != nil {
