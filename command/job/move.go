@@ -119,6 +119,9 @@ func Move(c *cli.Context, logger *log.Logger) error {
 	return nil
 }
 
+
+// Everything below is shamelessly borrowed from https://github.com/hashicorp/nomad/blob/master/command/job_plan.go
+
 // formatJobDiff produces an annotated diff of the job. If verbose mode is
 // set, added or deleted task groups and tasks are expanded.
 func formatJobDiff(job *api.JobDiff, verbose bool) string {
