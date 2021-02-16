@@ -8,11 +8,9 @@ require (
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
-	github.com/docker/go-units v0.4.0 // indirect
 	github.com/gorilla/mux v1.8.0
-	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/hashicorp/cronexpr v1.1.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+	github.com/hashicorp/nomad v1.0.3
 	github.com/hashicorp/nomad/api v0.0.0-20210212165259-def4d61617ae
 	github.com/karlseguin/ccache v2.0.3+incompatible
 	github.com/karlseguin/expect v1.0.1 // indirect
