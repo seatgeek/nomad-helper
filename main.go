@@ -253,6 +253,44 @@ func main() {
 						return err
 					},
 				},
+				{
+					Name:  "move",
+					Usage: "Move jobs in the cluster",
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "dry",
+							Usage: "Dry run, just print actions",
+						},
+						cli.BoolFlag{
+							Name:  "as-prefix",
+							Usage: "Treat the job name as a job prefix (job name 'api-' would mean all jobs 'api-*' would be stopped)",
+						},
+						cli.StringFlag{
+							Name:  "exclude",
+							Usage: "Filter out jobs with substring in name",
+						},
+						cli.StringFlag{
+							Name:  "constraint",
+							Usage: "Constraint attribute",
+						},
+						cli.StringFlag{
+							Name:  "operand",
+							Usage: "operator",
+						},
+						cli.StringFlag{
+							Name:  "value",
+							Usage: "value of constraint to check",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						err := job.Move(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
+					},
+				},
 			},
 		},
 		{
