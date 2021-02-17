@@ -3,13 +3,14 @@ package node
 import (
 	"context"
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/hashicorp/nomad/api"
 	nomadStructs "github.com/hashicorp/nomad/nomad/structs"
 	"github.com/seatgeek/nomad-helper/helpers"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"sync"
-	"time"
 )
 
 func Drain(c *cli.Context, logger *log.Logger) error {
