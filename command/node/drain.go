@@ -18,11 +18,11 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 		return fmt.Errorf("-monitor flag cannot be used with the '-enable' or '-disable' flags")
 	}
 
-	/*	// Check that we got either enable or disable, but not both.
-		if c.Bool("with-benefits") || ((c.Bool("enable") && c.Bool("disable")) || (!c.Bool("monitor") && !c.Bool("enable") && !c.Bool("disable"))) {
-			return fmt.Errorf("ethier the '-enable','-disable' or '-with-benefits' flag must be set, unless using '-monitor'")
-		}
-	*/
+	// Check that we got either enable or disable, but not both.
+	if (c.Bool("enable") && c.Bool("disable")) || (!c.Bool("monitor") && !c.Bool("enable") && !c.Bool("disable")) {
+		return fmt.Errorf("Ethier the '-enable' or '-disable' flag must be set, unless using '-monitor'")
+	}
+
 	// Validate a compatible set of flags were set
 	if c.Bool("disable") && (c.Bool("force") || c.Bool("no-deadline") || c.Bool("ignore-system")) {
 		return fmt.Errorf("-disable can't be combined with flags configuring drain strategy")
