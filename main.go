@@ -359,6 +359,10 @@ func main() {
 							Name:  "value",
 							Usage: "value of constraint to check",
 						},
+						cli.BoolFlag{
+							Name:  "wait-for-pending",
+							Usage: "Will wait for pending allocation and blocked evaluations per job",
+						},
 					},
 					Action: func(c *cli.Context) error {
 						err := node.Drain(c, log.StandardLogger())

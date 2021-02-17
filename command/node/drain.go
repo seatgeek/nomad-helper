@@ -90,18 +90,23 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 				continue
 			}
 
-			for _, allocation := range nodeAllocations {
-				if *allocation.Job.Type != "service" {
-					log.Infof("Skipping %s because it's not a service job", allocation.JobID)
+			for _, nodeAllocation := range nodeAllocations {
+				if *nodeAllocation.Job.Type != nomadStructs.JobTypeService {
+					log.Infof("Skipping %s because it's not a service job", nodeAllocation.JobID)
 					continue
 				}
 
-				log.Infof("Allocation %s, for job %s", allocation.ID, allocation.JobID)
+				if nodeAllocation.ClientStatus == nomadStructs.AllocClientStatusComplete || nodeAllocation.DesiredStatus == nomadStructs.AllocDesiredStatusStop {
+					log.Infof("Skipping %s because it's already complete", nodeAllocation.JobID)
+					continue
+				}
 
-				allocationJob := allocation.Job
+				log.Infof("Found Allocation %s, for job %s, moving it", nodeAllocation.ID, nodeAllocation.JobID)
+
+				allocationJob := nodeAllocation.Job
 				existingConstraintAppended := false
 				for taskGroupIndex, taskGroup := range allocationJob.TaskGroups {
-					if *taskGroup.Name == allocation.TaskGroup {
+					if *taskGroup.Name == nodeAllocation.TaskGroup {
 						for constraintIndex, constraint := range taskGroup.Constraints {
 							if constraint.LTarget == newConstraint.LTarget {
 								allocationJob.TaskGroups[taskGroupIndex].Constraints[constraintIndex] = newConstraint
@@ -113,9 +118,72 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 						}
 					}
 				}
-				_, _, err = nomadClient.Jobs().Register(allocationJob, nil)
+				registerResponse, _, err := nomadClient.Jobs().Register(allocationJob, nil)
 				if err != nil {
-					return fmt.Errorf("failed to move taskgroup %s for job %s: %s", allocation.TaskGroup, allocation.JobID, err)
+					return fmt.Errorf("failed to move taskgroup %s for job %s: %s", nodeAllocation.TaskGroup, nodeAllocation.JobID, err)
+				}
+				if c.Bool("wait-for-pending") {
+					log.Infof("Waiting for successfully placing the moved job")
+					// wait for the evaluation to be available
+					for {
+						time.Sleep(1 * time.Second)
+						evaluation, _, err := nomadClient.Evaluations().Info(registerResponse.EvalID, nil)
+						if err != nil {
+							continue
+						}
+
+						if evaluation.Status == nomadStructs.EvalStatusCancelled || evaluation.Status == nomadStructs.EvalStatusFailed {
+							logger.Errorf("Could not evaluate the job: %s", evaluation.StatusDescription)
+							continue
+						}
+
+						if evaluation.Status == nomadStructs.EvalStatusComplete {
+							log.Infof("Evaluation %s for job %s completed", evaluation.ID, nodeAllocation.JobID)
+							break
+						}
+					}
+
+					// wait for the allocations to be available
+					for {
+						time.Sleep(1 * time.Second)
+						evaluations, _, err := nomadClient.Evaluations().List(nil)
+						if err != nil {
+							continue
+						}
+						for _, evaluation := range evaluations {
+							if &evaluation.JobID == allocationJob.ID && evaluation.Status == nomadStructs.EvalStatusBlocked {
+								log.Infof("Job %s got blocked evaluations", allocationJob.ID)
+								continue
+							}
+						}
+
+						break
+					}
+
+					// waiting for allocation to be placed
+					for {
+						pendingAllocations := 0
+						allocations, _, err := nomadClient.Allocations().List(nil)
+						if err != nil {
+							continue
+						}
+						for _, allocation := range allocations {
+							if allocation.JobID == *allocationJob.ID {
+								for _, ts := range allocation.TaskStates {
+									if ts.State == nomadStructs.TaskStatePending {
+										pendingAllocations++
+										log.Infof("Allocation %s for job %s is pending,  waiting for this to be resolved", allocation.ID, *allocationJob.ID)
+									}
+								}
+							}
+						}
+						if pendingAllocations > 0 {
+							continue
+						}
+						break
+					}
+
+					log.Infof("All allocations for job %s are not pending anmore", *allocationJob.ID)
 				}
 				log.Infof("Job %s was successfully moved!", *allocationJob.ID)
 			}
