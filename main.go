@@ -343,6 +343,26 @@ func main() {
 							Name:  "no-progress",
 							Usage: "Do not show progress bar",
 						},
+						cli.BoolFlag{
+							Name:  "with-benefits",
+							Usage: "Instead of draining the node in a regular way move the jobs to specific constraints",
+						},
+						cli.StringFlag{
+							Name:  "constraint",
+							Usage: "Constraint attribute",
+						},
+						cli.StringFlag{
+							Name:  "operand",
+							Usage: "operator",
+						},
+						cli.StringFlag{
+							Name:  "value",
+							Usage: "value of constraint to check",
+						},
+						cli.BoolFlag{
+							Name:  "wait-for-pending",
+							Usage: "Will wait for pending allocation and blocked evaluations per job",
+						},
 					},
 					Action: func(c *cli.Context) error {
 						err := node.Drain(c, log.StandardLogger())
