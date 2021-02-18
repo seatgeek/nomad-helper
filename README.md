@@ -184,13 +184,18 @@ OPTIONS:
    --detach           Return immediately instead of entering monitor mode
    --ignore-system    Ignore system allows the drain to complete without stopping system job allocations. By default system jobs are stopped last.
    --keep-ineligible  Keep ineligible will maintain the node's scheduling ineligibility even if the drain is being disabled. This is useful when an existing drain is being cancelled but additional scheduling on the node is not desired.
+   --with-benefits    Instead of flipping the regular drain flag it will make instance ineligible and will add a desired constraint to the task groups found on the node
+        --constraint
+        --operand
+        --value
+        --wait-for-pending  will wait for all the moved jobs to reach running state
 ```
 
 #### Examples
 
 - `nomad-helper node drain --enable`
 - `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' drain --noop --enable`
-
+- `node --filter-meta "aws.ami-version=1.9.6" drain --enable --with-benefits --constraint meta.aws.ami-version --operand '=' --value 1.9.8 --wait-for-pending`
 ### eligibility
 
 Filtering options can be found in the main `node` command help above
