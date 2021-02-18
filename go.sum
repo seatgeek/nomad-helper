@@ -406,8 +406,8 @@ github.com/hashicorp/net-rpc-msgpackrpc v0.0.0-20151116020338-a14192a58a69/go.mo
 github.com/hashicorp/nomad v1.0.3 h1:AIlkxPrj1NCf2uOZgHHqaaRL3yS5adZvSf/HBYW9opE=
 github.com/hashicorp/nomad v1.0.3/go.mod h1:xEnaVs2WEZG3BqK3R30ns+LIQpOvzfwWcXr5OKPo72A=
 github.com/hashicorp/nomad/api v0.0.0-20200529203653-c4416b26d3eb/go.mod h1:DCi2k47yuUDzf2qWAK8E1RVmWgz/lc0jZQeEnICTxmY=
-github.com/hashicorp/nomad/api v0.0.0-20210216144318-cb4443d0dc72 h1:oJAo3Sob+UYHV1xIHuyYF9Ysb11cUxdky0A8LmL/07w=
-github.com/hashicorp/nomad/api v0.0.0-20210216144318-cb4443d0dc72/go.mod h1:vYHP9jMXk4/T2qNUbWlQ1OHCA1hHLil3nvqSmz8mtgc=
+github.com/hashicorp/nomad/api v0.0.0-20210218140912-095ed2c311cf h1:pNWHgCsqPNa/BKFgW+fQhPS3TblpnuAnVapz03A62hA=
+github.com/hashicorp/nomad/api v0.0.0-20210218140912-095ed2c311cf/go.mod h1:vYHP9jMXk4/T2qNUbWlQ1OHCA1hHLil3nvqSmz8mtgc=
 github.com/hashicorp/raft v1.1.1/go.mod h1:vPAJM8Asw6u8LxC3eJCUZmRP/E4QmUGE1R7g7k8sG/8=
 github.com/hashicorp/raft v1.1.2/go.mod h1:vPAJM8Asw6u8LxC3eJCUZmRP/E4QmUGE1R7g7k8sG/8=
 github.com/hashicorp/raft v1.1.3-0.20200211192230-365023de17e6 h1:+H0NF++gFCFqQQdjRstZssPZcx9BiaMOGHxSxoNvBN8=
@@ -672,8 +672,8 @@ github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPx
 github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMBDgk/93Q=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/sirupsen/logrus v1.6.0/go.mod h1:7uNnSEd1DgxDLC74fIahvMZmmYsHGZGEOFrfsX/uA88=
-github.com/sirupsen/logrus v1.7.1 h1:rsizeFmZP+GYwyb4V6t6qpG7ZNWzA2bvgW/yC2xHCcg=
-github.com/sirupsen/logrus v1.7.1/go.mod h1:4GuYW9TZmE769R5STWrRakJc4UqQ3+QQ95fyz7ENv1A=
+github.com/sirupsen/logrus v1.8.0 h1:nfhvjKcUMhBMVqbKHJlk5RPrrfYr/NMo3692g0dwfWU=
+github.com/sirupsen/logrus v1.8.0/go.mod h1:4GuYW9TZmE769R5STWrRakJc4UqQ3+QQ95fyz7ENv1A=
 github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c/go.mod h1:sUM3LWHvSMaG192sy56D9F7CNvL7jUJVXoqM1QKLnog=
 github.com/smartystreets/assertions v0.0.0-20180820201707-7c9eb446e3cf/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
@@ -753,8 +753,8 @@ golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975/go.mod h1:LzIPMQfyMNhhGPh
 golang.org/x/crypto v0.0.0-20200422194213-44a606286825/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 h1:psW17arqaxU48Z5kZ0CQnkZWQJsqcURM6tKiBApRjXI=
 golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
-golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad h1:DN0cp81fZ3njFcrLCytUHRSUkqBjfTo4Tx9RJTWs0EY=
-golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad/go.mod h1:jdWPYTVW3xRLrWPugEBEK3UY2ZEsg3UU495nc5E+M+I=
+golang.org/x/crypto v0.0.0-20210218145215-b8e89b74b9df h1:y7QZzfUiTwWam+xBn29Ulb8CBwVN5UdzmMDavl9Whlw=
+golang.org/x/crypto v0.0.0-20210218145215-b8e89b74b9df/go.mod h1:jdWPYTVW3xRLrWPugEBEK3UY2ZEsg3UU495nc5E+M+I=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190510132918-efd6b22b2522/go.mod h1:ZjyILWgesfNpC6sMxTJOJm9Kp84zZh5NQWvqDGG3Qr8=
@@ -858,8 +858,8 @@ golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20200413165638-669c56c373c4/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20200728102440-3e129f6d46b1/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
-golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c h1:VwygUrnw9jn88c4u8GD3rZQbqrP/tgas88tPUbBxQrk=
-golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20210218085108-9555bcde0c6a h1:+Kiu2GijIw0WaCBk1i7AcqqRx8Xg3HIYaheQazXOu8w=
+golang.org/x/sys v0.0.0-20210218085108-9555bcde0c6a/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/text v0.0.0-20160726164857-2910a502d2bf/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
@@ -932,8 +932,8 @@ google.golang.org/genproto v0.0.0-20190911173649-1774047e7e51/go.mod h1:IbNlFCBr
 google.golang.org/genproto v0.0.0-20200302123026-7795fca6ccb1 h1:RYJIKMPLUCjLP+fEg9ygjxF3KjfSHN4BSZw91aecq6U=
 google.golang.org/genproto v0.0.0-20200302123026-7795fca6ccb1/go.mod h1:55QSHmfGQM9UVYDPBsyGGes0y52j32PQ3BqQfXhyH3c=
 google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013/go.mod h1:NbSheEEYHJ7i3ixzK3sjbqSGDJWnxyFXZblF3eUsNvo=
-google.golang.org/genproto v0.0.0-20210212180131-e7f2df4ecc2d h1:Edhcm0CKDPLQIecHCp5Iz57Lo7MfT6zUFBAlocmOjcY=
-google.golang.org/genproto v0.0.0-20210212180131-e7f2df4ecc2d/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
+google.golang.org/genproto v0.0.0-20210217220511-c18582744cc2 h1:pkt4FLyKaqUuYonDpjdYNhcyWRKxn9Fs8cttR9ldTHA=
+google.golang.org/genproto v0.0.0-20210217220511-c18582744cc2/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/grpc v0.0.0-20160317175043-d3ddb4469d5a/go.mod h1:yo6s7OP7yaDglbqo1J04qKzAhqBH6lvTonzMVmEdcZw=
 google.golang.org/grpc v1.8.0/go.mod h1:yo6s7OP7yaDglbqo1J04qKzAhqBH6lvTonzMVmEdcZw=
 google.golang.org/grpc v1.14.0/go.mod h1:yo6s7OP7yaDglbqo1J04qKzAhqBH6lvTonzMVmEdcZw=

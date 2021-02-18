@@ -16,7 +16,7 @@ import (
 	"github.com/seatgeek/nomad-helper/command/server"
 	"github.com/seatgeek/nomad-helper/command/tail"
 	log "github.com/sirupsen/logrus"
-	cli "github.com/urfave/cli"
+	"github.com/urfave/cli"
 	"gopkg.in/workanator/go-ataman.v1"
 )
 
@@ -246,6 +246,18 @@ func main() {
 					},
 					Action: func(c *cli.Context) error {
 						err := job.Stop(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
+					},
+				},
+				{
+					Name:  "hunt",
+					Usage: "Hunt the Jobs with discrepancy in Job version between allocations",
+					Action: func(c *cli.Context) error {
+						err := job.Hunt()
 						if err != nil {
 							log.Fatal(err)
 						}
@@ -492,7 +504,7 @@ func main() {
 					Action: func(c *cli.Context) error {
 						configFile := c.Args().Get(0)
 						if configFile == "" {
-							return fmt.Errorf("Missing file name")
+							return fmt.Errorf("missing file name")
 						}
 
 						err := scale.ExportCommand(configFile)
@@ -509,7 +521,7 @@ func main() {
 					Action: func(c *cli.Context) error {
 						configFile := c.Args().Get(0)
 						if configFile == "" {
-							return fmt.Errorf("Missing file name")
+							return fmt.Errorf("missing file name")
 						}
 
 						err := scale.ImportCommand(configFile)
