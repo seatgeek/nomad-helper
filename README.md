@@ -215,7 +215,7 @@ OPTIONS:
 #### Examples
 
 - `nomad-helper node eligibility --enable`
-- `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' eligibility --noop --enable`
+- `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' eligibility --enable`
 
 ### Breakdown
 
