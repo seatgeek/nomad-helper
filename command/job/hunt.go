@@ -2,9 +2,10 @@ package job
 
 import (
 	"fmt"
-	"github.com/hashicorp/nomad/api"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/nomad/api"
 )
 
 func Hunt() error {
@@ -14,33 +15,49 @@ func Hunt() error {
 		return err
 	}
 
+	// Get the jobs
 	jobs, _, err := nomadClient.Jobs().List(nil)
 	if err != nil {
 		return err
 	}
-	for _, job := range jobs {
-		if job.Type == "service" {
-			jAllocations, _, _ := nomadClient.Jobs().Allocations(job.ID, true, nil)
-			damn := false
-			for _, allocation := range jAllocations {
-				if allocation.JobVersion != jAllocations[0].JobVersion && allocation.ClientStatus == "running" {
-					damn = true
-					break
-				}
-			}
-			if damn {
-				fmt.Println(job.ID)
-				for _, allocation := range jAllocations {
 
-					fmt.Printf("%s | Version %v | Desired %s | Actual %s - %s | Create Time: %s\n", strings.Split(allocation.ID, "-")[0], allocation.JobVersion, allocation.DesiredStatus, allocation.ClientStatus, allocation.ClientDescription, prettyTimeDiff(time.Unix(0, allocation.CreateTime), time.Now()))
-				}
-				fmt.Println()
+	for _, job := range jobs {
+		if job.Type != "service" {
+			continue
+		}
+
+		// Get job's running allocations
+		jobAllocations, _, err := nomadClient.Jobs().Allocations(job.ID, true, nil)
+		if err != nil {
+			return err
+		}
+
+		var runningAllocationJobVersion []uint64
+		for _, allocation := range jobAllocations {
+			if allocation.ClientStatus == "running" {
+				runningAllocationJobVersion = append(runningAllocationJobVersion, allocation.JobVersion)
+			}
+		}
+
+		// check for job version discrepancy
+		for _, jobVersion := range runningAllocationJobVersion {
+			if jobVersion != runningAllocationJobVersion[0] {
+				shame(job.ID, jobAllocations)
+				break
 			}
 		}
 	}
+
 	return nil
 }
 
+func shame(jobID string, jobAllocations []*api.AllocationListStub) {
+	fmt.Println(jobID)
+	for _, allocation := range jobAllocations {
+		fmt.Printf("%s | Version %v | Desired %s | Actual %s - %s | Create Time: %s\n", strings.Split(allocation.ID, "-")[0], allocation.JobVersion, allocation.DesiredStatus, allocation.ClientStatus, allocation.ClientDescription, prettyTimeDiff(time.Unix(0, allocation.CreateTime), time.Now()))
+	}
+	fmt.Println()
+}
 
 // prettyTimeDiff prints a human readable time difference.
 // It uses abbreviated forms for each period - s for seconds, m for minutes, h for hours,
