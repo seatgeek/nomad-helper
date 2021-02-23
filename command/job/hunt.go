@@ -32,16 +32,14 @@ func Hunt() error {
 			return err
 		}
 
-		var runningAllocationJobVersion []uint64
+		var firstRunningJobVersion uint64 = 0
 		for _, allocation := range jobAllocations {
-			if allocation.ClientStatus == "running" {
-				runningAllocationJobVersion = append(runningAllocationJobVersion, allocation.JobVersion)
+			// Find the first running job version
+			if allocation.ClientStatus == "running" && firstRunningJobVersion == 0 {
+				firstRunningJobVersion = allocation.JobVersion
+				continue
 			}
-		}
-
-		// check for job version discrepancy
-		for _, jobVersion := range runningAllocationJobVersion {
-			if jobVersion != runningAllocationJobVersion[0] {
+			if allocation.ClientStatus == "running" && allocation.JobVersion != firstRunningJobVersion {
 				shame(job.ID, jobAllocations)
 				break
 			}
