@@ -117,7 +117,7 @@ OPTIONS:
 
 ## tail
 
-Automatically handle discovery of allocation and tail both `stdout` and `stdout` at the same time
+Automatically handle discovery of allocation and tail both `stdout` and `stderr` at the same time
 
 ```
 NAME:
@@ -147,13 +147,13 @@ USAGE:
 
 COMMANDS:
      drain                  The node drain command is used to toggle drain mode on a given node. Drain mode prevents any new tasks from being allocated to the node, and begins migrating all existing allocations away
-     eligibility, eligible  The eligibility command is used to toggle scheduling eligibility for a given node. By default node's are eligible for scheduling meaning they can receive placements and run new allocations. Node's that have their scheduling elegibility disabled are ineligibile for new placements.
+     eligibility, eligible  The eligibility command is used to toggle scheduling eligibility for a given node. By default node's are eligible for scheduling meaning they can receive placements and run new allocations. Node's that have their scheduling eligibility disabled are ineligible for new placements.
 
 OPTIONS:
    --filter-prefix ef30d57c                                   Filter nodes by their ID with prefix matching ef30d57c
    --filter-class batch-jobs                                  Filter nodes by their node class batch-jobs
    --filter-version 0.8.4                                     Filter nodes by their Nomad version 0.8.4
-   --filter-eligibility                                       Filter nodes by theit sheduling eligibility
+   --filter-eligibility                                       Filter nodes by their scheduling eligibility
    --percent                                                  Filter only specific percent of nodes
    --filter-meta 'aws.instance.availability-zone=us-east-1e'  Filter nodes by their meta key/value like 'aws.instance.availability-zone=us-east-1e'. Can be provided multiple times.
    --filter-attribute 'driver.docker.version=17.09.0-ce'      Filter nodes by their attribute key/value like 'driver.docker.version=17.09.0-ce'. Can be provided multiple times.
@@ -202,13 +202,13 @@ Filtering options can be found in the main `node` command help above
 
 ```
 NAME:
-   nomad-helper node eligibility - The eligibility command is used to toggle scheduling eligibility for a given node. By default node's are eligible for scheduling meaning they can receive placements and run new allocations. Node's that have their scheduling elegibility disabled are ineligibile for new placements.
+   nomad-helper node eligibility - The eligibility command is used to toggle scheduling eligibility for a given node. By default node's are eligible for scheduling meaning they can receive placements and run new allocations. Node's that have their scheduling eligibility disabled are ineligible for new placements.
 
 USAGE:
    nomad-helper node [filter options] eligibility [command options] [arguments...]
 
 OPTIONS:
-   --enable   Enable scheduling eligbility
+   --enable   Enable scheduling eligibility
    --disable  Disable scheduling eligibility
 ```
 

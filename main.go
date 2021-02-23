@@ -131,7 +131,7 @@ var Version = "local-dev"
 func main() {
 	app := cli.NewApp()
 	app.Name = "nomad-helper"
-	app.Usage = "Useful utilties for working with Nomad at scale"
+	app.Usage = "Useful utilities for working with Nomad at scale"
 	app.Version = Version
 
 	app.Flags = []cli.Flag{
@@ -337,7 +337,7 @@ func main() {
 						},
 						cli.BoolFlag{
 							Name:  "keep-ineligible",
-							Usage: "Keep ineligible will maintain the node's scheduling ineligibility even if the drain is being disabled. This is useful when an existing drain is being cancelled but additional scheduling on the node is not desired.",
+							Usage: "Keep ineligible will maintain the node's scheduling ineligibility even if the drain is being disabled. This is useful when an existing drain is being canceled but additional scheduling on the node is not desired.",
 						},
 						cli.BoolFlag{
 							Name:  "no-progress",
@@ -376,11 +376,11 @@ func main() {
 				{
 					Name:    "eligibility",
 					Aliases: []string{"eligible"},
-					Usage:   "The eligibility command is used to toggle scheduling eligibility for a given node. By default node's are eligible for scheduling meaning they can receive placements and run new allocations. Node's that have their scheduling elegibility disabled are ineligibile for new placements.",
+					Usage:   "The eligibility command is used to toggle scheduling eligibility for a given node. By default node's are eligible for scheduling meaning they can receive placements and run new allocations. Node's that have their scheduling eligibility disabled are ineligible for new placements.",
 					Flags: []cli.Flag{
 						cli.BoolFlag{
 							Name:  "enable",
-							Usage: "Enable scheduling eligbility",
+							Usage: "Enable scheduling eligibility",
 						},
 						cli.BoolFlag{
 							Name:  "disable",
@@ -564,7 +564,7 @@ func main() {
 		},
 		{
 			Name:        "server",
-			Usage:       "Run a webserver exposing various endpoints",
+			Usage:       "Run a web server exposing various endpoints",
 			Description: rndr.MustRender(fieldHelpText) + rndr.MustRender(filterWebHelpText) + rndr.MustRender(strings.ReplaceAll(helpWebExamples, "__COMMAND__", "breakdown")),
 			Flags: []cli.Flag{
 				cli.StringFlag{
