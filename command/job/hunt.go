@@ -21,6 +21,7 @@ func Hunt() error {
 		return err
 	}
 
+	var firstRunningJobVersion uint64 = 0
 	for _, job := range jobs {
 		if job.Type != "service" {
 			continue
@@ -32,14 +33,18 @@ func Hunt() error {
 			return err
 		}
 
-		var firstRunningJobVersion uint64 = 0
+		firstRunningJobVersion = 0
 		for _, allocation := range jobAllocations {
-			// Find the first running job version
-			if allocation.ClientStatus == "running" && firstRunningJobVersion == 0 {
+			if allocation.ClientStatus != "running" {
+				continue
+			}
+
+			if firstRunningJobVersion == 0 {
 				firstRunningJobVersion = allocation.JobVersion
 				continue
 			}
-			if allocation.ClientStatus == "running" && allocation.JobVersion != firstRunningJobVersion {
+
+			if allocation.JobVersion != firstRunningJobVersion {
 				shame(job.ID, jobAllocations)
 				break
 			}
