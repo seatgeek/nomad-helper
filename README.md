@@ -23,6 +23,7 @@
     - [job](#job)
         - [stop](#stop)
         - [move](#move)
+        - [hunt](#hunt)
     - [scale](#scale)
         - [export](#export)
         - [import](#import)
@@ -333,6 +334,7 @@ USAGE:
 COMMANDS:
      stop   Stop will stop the job with the ability to purge the job from the nomad cluster
      move   Move will add/append a constraint to the job that will resolve to moving the job
+     hunt   Hunt will look for the jobs with discrepancy in job version between allocations
 
 OPTIONS:
    --help, -h                                                 show help
@@ -374,6 +376,17 @@ OPTIONS:
 
 - `job move api --constraint meta.aws.ami-version --operand = --value 1.9.1 --exclude core`
 - `job move api --as-prefix --constraint meta.aws.ami-version --operand = --value 1.9.1 --exclude core`
+
+### hunt
+
+```
+USAGE:
+   nomad-helper job hunt
+```
+
+#### Examples
+
+- `job hunt`
 
 ## scale
 
