@@ -20,7 +20,7 @@ require (
 	github.com/hashicorp/go-plugin v1.4.0 // indirect
 	github.com/hashicorp/go-version v1.2.1 // indirect
 	github.com/hashicorp/nomad v1.0.3
-	github.com/hashicorp/nomad/api v0.0.0-20210218140912-095ed2c311cf
+	github.com/hashicorp/nomad/api v0.0.0-20210222214403-174c206b3084
 	github.com/hashicorp/raft v1.2.0 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/karlseguin/ccache v2.0.3+incompatible
@@ -41,11 +41,11 @@ require (
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/urfave/cli v1.22.5
 	github.com/wsxiaoys/terminal v0.0.0-20160513160801-0940f3fc43a0 // indirect
-	golang.org/x/crypto v0.0.0-20210218145215-b8e89b74b9df // indirect
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
-	golang.org/x/sys v0.0.0-20210218085108-9555bcde0c6a // indirect
+	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
+	golang.org/x/net v0.0.0-20210222171744-9060382bd457 // indirect
+	golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 // indirect
 	golang.org/x/text v0.3.5 // indirect
-	google.golang.org/genproto v0.0.0-20210217220511-c18582744cc2 // indirect
+	google.golang.org/genproto v0.0.0-20210222212404-3e1e516060db // indirect
 	google.golang.org/grpc v1.35.0 // indirect
 	gopkg.in/karlseguin/expect.v1 v1.0.1 // indirect
 	gopkg.in/workanator/go-ataman.v1 v1.0.0-20201223053604-e3b73d2e8108
