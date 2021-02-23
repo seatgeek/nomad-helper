@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine
 
 # Adding ca-certificates for external communication, and openssh
 # for attaching to remote nodes

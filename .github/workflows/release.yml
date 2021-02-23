@@ -1,0 +1,48 @@
+on:
+  release:
+    types:
+      - created
+
+name: Upload Release Assets
+
+jobs:
+  build:
+    name: Upload Release Asset
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Go environment
+        uses: actions/setup-go@v2.1.3
+      - name: build
+        run: GOBUILD="linux-amd64 windows-amd64 darwin-amd64" make -j build
+      - name: Upload linux binary
+        id: upload-release-asset-linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./build/nomad-helper-linux-amd64
+          asset_name: nomad-helper-linux-amd64
+          asset_content_type: application/octet-stream
+      - name: Upload MacOS binary
+        id: upload-release-asset-macos
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./build/nomad-helper-darwin-amd64
+          asset_name: nomad-helper-darwin-amd64
+          asset_content_type: application/octet-stream
+      - name: Upload Windows binary
+        id: upload-release-asset-windows
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./build/nomad-helper-windows-amd64
+          asset_name: nomad-helper-windows-amd64
+          asset_content_type: application/octet-stream
