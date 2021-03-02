@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"sync"
 	"time"
 
@@ -13,6 +14,11 @@ import (
 	"github.com/urfave/cli"
 )
 
+var (
+	newConstraint api.Constraint
+	evalID        string
+)
+
 func Drain(c *cli.Context, logger *log.Logger) error {
 	// Check that enable or disable is not set with monitor
 	if c.Bool("monitor") && (c.Bool("enable") || c.Bool("disable")) {
@@ -21,7 +27,7 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 
 	// Check that we got either enable or disable, but not both.
 	if (c.Bool("enable") && c.Bool("disable")) || (!c.Bool("monitor") && !c.Bool("enable") && !c.Bool("disable")) {
-		return fmt.Errorf("Ethier the '-enable' or '-disable' flag must be set, unless using '-monitor'")
+		return fmt.Errorf("either the '-enable' or '-disable' flag must be set, unless using '-monitor'")
 	}
 
 	// Validate a compatible set of flags were set
@@ -31,18 +37,14 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 	if c.Bool("force") && c.Bool("no-deadline") {
 		return fmt.Errorf("-force and -no-deadline are mutually exclusive")
 	}
-	newConstraint := &api.Constraint{}
-	if c.Bool("with-benefits") {
-		if c.String("constraint") == "" {
-			return fmt.Errorf("with-benefits selected, must provide new constrain name")
-		}
+	if c.String("constraint") != "" {
 		if c.String("operand") == "" {
-			return fmt.Errorf("with-benefits selected, must provide new constrain name")
+			return fmt.Errorf("with-benefits constraint provided, must provide new constrain operand")
 		}
 		if c.String("value") == "" {
-			return fmt.Errorf("with-benefits selected, must provide new constrain name")
+			return fmt.Errorf("with-benefits constraint provided, must provide new constrain value")
 		}
-		newConstraint = api.NewConstraint(fmt.Sprintf("${%s}", c.String("constraint")), c.String("operand"), c.String("value"))
+		newConstraint = *api.NewConstraint(fmt.Sprintf("${%s}", c.String("constraint")), c.String("operand"), c.String("value"))
 	}
 
 	deadline := c.Duration("deadline")
@@ -103,90 +105,21 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 				}
 
 				log.Infof("Found Allocation %s, for job %s, moving it", nodeAllocation.ID, nodeAllocation.JobID)
-
-				allocationJob := nodeAllocation.Job
-				existingConstraintAppended := false
-				for taskGroupIndex, taskGroup := range allocationJob.TaskGroups {
-					if *taskGroup.Name == nodeAllocation.TaskGroup {
-						for constraintIndex, constraint := range taskGroup.Constraints {
-							if constraint.LTarget == newConstraint.LTarget {
-								allocationJob.TaskGroups[taskGroupIndex].Constraints[constraintIndex] = newConstraint
-								existingConstraintAppended = true
-							}
-						}
-						if !existingConstraintAppended {
-							allocationJob.TaskGroups[taskGroupIndex].Constrain(newConstraint)
-						}
+				if reflect.DeepEqual(newConstraint, &api.Constraint{}) {
+					evalID, err = stopAllocation(nomadClient, nodeAllocation)
+					if err != nil {
+						return err
 					}
-				}
-				registerResponse, _, err := nomadClient.Jobs().Register(allocationJob, nil)
-				if err != nil {
-					return fmt.Errorf("failed to move taskgroup %s for job %s: %s", nodeAllocation.TaskGroup, nodeAllocation.JobID, err)
+
+				} else {
+					evalID, err = moveJobTaskGroup(nodeAllocation, &newConstraint, nomadClient)
+					if err != nil {
+						return err
+					}
 				}
 				if c.Bool("wait-for-pending") {
-					log.Infof("Waiting for successfully placing the moved job")
-					// wait for the evaluation to be available
-					for {
-						time.Sleep(1 * time.Second)
-						evaluation, _, err := nomadClient.Evaluations().Info(registerResponse.EvalID, nil)
-						if err != nil {
-							continue
-						}
-
-						if evaluation.Status == nomadStructs.EvalStatusCancelled || evaluation.Status == nomadStructs.EvalStatusFailed {
-							logger.Errorf("Could not evaluate the job: %s", evaluation.StatusDescription)
-							continue
-						}
-
-						if evaluation.Status == nomadStructs.EvalStatusComplete {
-							log.Infof("Evaluation %s for job %s completed", evaluation.ID, nodeAllocation.JobID)
-							break
-						}
-					}
-
-					// wait for the allocations to be available
-					for {
-						time.Sleep(1 * time.Second)
-						evaluations, _, err := nomadClient.Evaluations().List(nil)
-						if err != nil {
-							continue
-						}
-						for _, evaluation := range evaluations {
-							if &evaluation.JobID == allocationJob.ID && evaluation.Status == nomadStructs.EvalStatusBlocked {
-								log.Infof("Job %s got blocked evaluations", allocationJob.ID)
-								continue
-							}
-						}
-
-						break
-					}
-
-					// waiting for allocation to be placed
-					for {
-						pendingAllocations := 0
-						allocations, _, err := nomadClient.Allocations().List(nil)
-						if err != nil {
-							continue
-						}
-						for _, allocation := range allocations {
-							if allocation.JobID == *allocationJob.ID {
-								for _, ts := range allocation.TaskStates {
-									if ts.State == nomadStructs.TaskStatePending {
-										pendingAllocations++
-										log.Infof("Allocation %s for job %s is pending,  waiting for this to be resolved", allocation.ID, *allocationJob.ID)
-									}
-								}
-							}
-						}
-						if pendingAllocations > 0 {
-							continue
-						}
-						break
-					}
-
-					log.Infof("All allocations for job %s are not pending anmore", *allocationJob.ID)
+					waitForPending(logger, nomadClient, nodeAllocation.JobID, evalID)
 				}
-				log.Infof("Job %s was successfully moved!", *allocationJob.ID)
 			}
 			continue
 		}
@@ -227,6 +160,110 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 	wg.Wait()
 
 	return nil
+}
+
+func waitForPending(logger *log.Logger, nomadClient *api.Client, JobID, EvalID string) {
+	log.Infof("Waiting for successfully placing the moved job")
+	// wait for the evaluation to be available
+	for {
+		time.Sleep(1 * time.Second)
+		evaluation, _, err := nomadClient.Evaluations().Info(EvalID, nil)
+		if err != nil {
+			continue
+		}
+
+		if evaluation.Status == nomadStructs.EvalStatusCancelled || evaluation.Status == nomadStructs.EvalStatusFailed {
+			logger.Errorf("Could not evaluate the job: %s", evaluation.StatusDescription)
+			continue
+		}
+
+		if evaluation.Status == nomadStructs.EvalStatusComplete {
+			log.Infof("Evaluation %s for job %s completed", evaluation.ID, JobID)
+			break
+		}
+	}
+
+	// wait for the allocations to be available
+	for {
+		time.Sleep(1 * time.Second)
+		evaluations, _, err := nomadClient.Evaluations().List(nil)
+		if err != nil {
+			continue
+		}
+		for _, evaluation := range evaluations {
+			if evaluation.JobID == JobID && evaluation.Status == nomadStructs.EvalStatusBlocked {
+				log.Infof("Job %s got blocked evaluations", JobID)
+				continue
+			}
+		}
+
+		break
+	}
+
+	// waiting for allocation to be placed
+	for {
+		time.Sleep(1 * time.Second)
+		pendingAllocations := 0
+		allocations, _, err := nomadClient.Allocations().List(nil)
+		if err != nil {
+			continue
+		}
+		for _, allocation := range allocations {
+			if allocation.JobID == JobID {
+				if allocation.ClientStatus == nomadStructs.AllocClientStatusPending {
+					pendingAllocations++
+					log.Infof("Allocation %s for job %s is pending,  waiting for this to be resolved", allocation.ID, JobID)
+					break
+				}
+				for _, ts := range allocation.TaskStates {
+					if ts.State == nomadStructs.TaskStatePending {
+						pendingAllocations++
+						log.Infof("Allocation %s for job %s is pending,  waiting for this to be resolved", allocation.ID, JobID)
+						break
+					}
+				}
+			}
+		}
+		if pendingAllocations > 0 {
+			continue
+		}
+		break
+	}
+
+	log.Infof("All allocations for job %s are not pending anymore", JobID)
+
+	log.Infof("Job %s was successfully moved!", JobID)
+}
+
+func moveJobTaskGroup(nodeAllocation *api.Allocation, newConstraint *api.Constraint, nomadClient *api.Client) (string, error) {
+	allocationJob := nodeAllocation.Job
+	existingConstraintAppended := false
+	for taskGroupIndex, taskGroup := range allocationJob.TaskGroups {
+		if *taskGroup.Name == nodeAllocation.TaskGroup {
+			for constraintIndex, constraint := range taskGroup.Constraints {
+				if constraint.LTarget == newConstraint.LTarget {
+					allocationJob.TaskGroups[taskGroupIndex].Constraints[constraintIndex] = newConstraint
+					existingConstraintAppended = true
+				}
+			}
+			if !existingConstraintAppended {
+				allocationJob.TaskGroups[taskGroupIndex].Constrain(newConstraint)
+			}
+		}
+	}
+	registerResponse, _, err := nomadClient.Jobs().Register(allocationJob, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to move taskgroup %s for job %s: %s", nodeAllocation.TaskGroup, nodeAllocation.JobID, err)
+	}
+	return registerResponse.EvalID, nil
+}
+
+func stopAllocation(nomadClient *api.Client, nodeAllocation *api.Allocation) (string, error) {
+	stopResponse, err := nomadClient.Allocations().Stop(nodeAllocation, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to move taskgroup %s for job %s: %s", nodeAllocation.TaskGroup, nodeAllocation.JobID, err)
+	}
+	return stopResponse.EvalID, err
 }
 
 func monitor(ctx context.Context, client *api.Client, node *api.Node, wg *sync.WaitGroup) {
