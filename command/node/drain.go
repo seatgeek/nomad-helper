@@ -3,7 +3,6 @@ package node
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"sync"
 	"time"
 
@@ -37,6 +36,7 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 	if c.Bool("force") && c.Bool("no-deadline") {
 		return fmt.Errorf("-force and -no-deadline are mutually exclusive")
 	}
+
 	if c.String("constraint") != "" {
 		if c.String("operand") == "" {
 			return fmt.Errorf("with-benefits constraint provided, must provide new constrain operand")
@@ -105,7 +105,7 @@ func Drain(c *cli.Context, logger *log.Logger) error {
 				}
 
 				log.Infof("Found Allocation %s, for job %s, moving it", nodeAllocation.ID, nodeAllocation.JobID)
-				if reflect.DeepEqual(newConstraint, &api.Constraint{}) {
+				if c.String("constraint") == "" {
 					evalID, err = stopAllocation(nomadClient, nodeAllocation)
 					if err != nil {
 						return err
