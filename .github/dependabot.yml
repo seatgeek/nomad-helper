@@ -1,0 +1,23 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "10:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: github.com/sirupsen/logrus
+    versions:
+    - 1.7.0
+    - 1.7.1
+    - 1.8.0
+  - dependency-name: github.com/gorilla/mux
+    versions:
+    - 1.8.0
+  - dependency-name: github.com/urfave/cli
+    versions:
+    - 1.22.5
+  - dependency-name: github.com/olekukonko/tablewriter
+    versions:
+    - 0.0.4
