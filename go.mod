@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/Jeffail/tunny v0.0.0-20210126202424-1b37d6cb867a
-	github.com/alecthomas/chroma v0.9.1
+	github.com/alecthomas/chroma v0.9.4
 	github.com/armon/go-metrics v0.3.6 // indirect
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
@@ -35,7 +35,6 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/urfave/cli v1.22.5
 	github.com/wsxiaoys/terminal v0.0.0-20160513160801-0940f3fc43a0 // indirect
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
