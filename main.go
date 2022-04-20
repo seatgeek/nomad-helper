@@ -10,6 +10,7 @@ import (
 	"github.com/seatgeek/nomad-helper/command/attach"
 	"github.com/seatgeek/nomad-helper/command/gc"
 	"github.com/seatgeek/nomad-helper/command/job"
+	"github.com/seatgeek/nomad-helper/command/namespace"
 	"github.com/seatgeek/nomad-helper/command/node"
 	"github.com/seatgeek/nomad-helper/command/reevaluate"
 	"github.com/seatgeek/nomad-helper/command/scale"
@@ -296,6 +297,31 @@ func main() {
 					},
 					Action: func(c *cli.Context) error {
 						err := job.Move(c, log.StandardLogger())
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						return err
+					},
+				},
+			},
+		},
+		{
+			Name:  "namespace",
+			Usage: "namespace specific commands with a twist (see help)",
+			Flags: filterFlags,
+			Subcommands: []cli.Command{
+				{
+					Name:  "gc",
+					Usage: "Cleans up empty namespaces",
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "dry",
+							Usage: "Dry run, just print actions",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						err := namespace.GC(c, log.StandardLogger())
 						if err != nil {
 							log.Fatal(err)
 						}
