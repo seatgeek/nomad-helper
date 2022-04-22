@@ -11,6 +11,8 @@
 - [Usage](#usage)
     - [attach](#attach)
     - [tail](#tail)
+    - [namespace](#namespace)
+        - [gc](#gc)
     - [node](#node)
         - [Filter examples](#filter-examples)
         - [drain](#drain)
@@ -135,6 +137,23 @@ OPTIONS:
    --stdout       (optional, default: true) tail stdout from nomad
 ```
 
+## namespace
+
+namespace specific commands
+
+### gc
+
+```
+NAME:
+   nomad-helper namespace gc - Cleans up empty namespaces
+
+USAGE:
+   nomad-helper namespace gc [command options] [arguments...]
+
+OPTIONS:
+   --dry  Dry run, just print actions
+```
+
 ## node
 
 node specific commands that act on all Nomad clients that match the filters provided, rather than a single node
@@ -197,6 +216,7 @@ OPTIONS:
 - `nomad-helper node drain --enable`
 - `nomad-helper node --filter-class wrecker --filter-meta 'aws.ami-version=2.0.0-alpha14' --filter-meta 'aws.instance.availability-zone=us-east-1e' drain --noop --enable`
 - `node --filter-meta "aws.ami-version=1.9.6" drain --enable --with-benefits --constraint meta.aws.ami-version --operand '=' --value 1.9.8 --wait-for-pending`
+
 ### eligibility
 
 Filtering options can be found in the main `node` command help above
