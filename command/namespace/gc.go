@@ -14,13 +14,25 @@ func GC(c *cli.Context, logger *log.Logger) error {
 		return err
 	}
 
+	regions, err := nomadClient.Regions().List()
+	if err != nil {
+		return err
+	}
+
 	var deletableNamespaces []*api.Namespace
 	namespaces, _, err := nomadClient.Namespaces().List(nil)
 	for _, namespace := range namespaces {
+		var jobs []*api.JobListStub
+		for _, region := range regions {
+			regionJobs, _, err := nomadClient.Jobs().List(&api.QueryOptions{
+				Region:    region,
+				Namespace: namespace.Name,
+			})
+			if err != nil {
+				return err
+			}
 
-		jobs, _, err := nomadClient.Jobs().List(&api.QueryOptions{Namespace: namespace.Name})
-		if err != nil {
-			return err
+			jobs = append(jobs, regionJobs...)
 		}
 
 		if len(jobs) == 0 {
