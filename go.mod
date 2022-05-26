@@ -7,7 +7,7 @@ require (
 	github.com/alecthomas/chroma v0.10.0
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/gorilla/mux v1.8.0
-	github.com/hashicorp/nomad v1.3.0
+	github.com/hashicorp/nomad v1.3.1
 	github.com/hashicorp/nomad/api v0.0.0-20220407202126-2eba643965c4
 	github.com/karlseguin/ccache v2.0.3+incompatible
 	github.com/karlseguin/expect v1.0.1 // indirect
