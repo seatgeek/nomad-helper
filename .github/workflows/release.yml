@@ -15,9 +15,9 @@ jobs:
       - name: Setup Go environment
         uses: actions/setup-go@v2.1.3
       - name: build
-        run: GOBUILD="linux-amd64 windows-amd64 darwin-amd64" make -j build
-      - name: Upload linux binary
-        id: upload-release-asset-linux
+        run: GOBUILD="linux-amd64 linux-arm64 windows-amd64 darwin-amd64" make -j build
+      - name: Upload linux-amd64 binary
+        id: upload-release-asset-linux-amd64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -25,6 +25,16 @@ jobs:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./build/nomad-helper-linux-amd64
           asset_name: nomad-helper-linux-amd64
+          asset_content_type: application/octet-stream
+      - name: Upload linux-arm64 binary
+        id: upload-release-asset-linux-arm64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./build/nomad-helper-linux-arm64
+          asset_name: nomad-helper-linux-arm64
           asset_content_type: application/octet-stream
       - name: Upload MacOS binary
         id: upload-release-asset-macos
