@@ -319,6 +319,10 @@ func main() {
 							Name:  "dry",
 							Usage: "Dry run, just print actions",
 						},
+						cli.StringSliceFlag{
+							Name:  "ignore-job",
+							Usage: "Ignore a job ID when marking a namespace as empty. Can be provided multiple times.",
+						},
 					},
 					Action: func(c *cli.Context) error {
 						err := namespace.GC(c, log.StandardLogger())
