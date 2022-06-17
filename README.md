@@ -152,6 +152,7 @@ USAGE:
 
 OPTIONS:
    --dry  Dry run, just print actions
+   --ignore-job value  Ignore a job ID when marking a namespace as empty. Can be provided multiple times.
 ```
 
 ## node
