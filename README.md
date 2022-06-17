@@ -155,6 +155,8 @@ OPTIONS:
    --ignore-job value  Ignore a job ID when marking a namespace as empty. Can be provided multiple times.
 ```
 
+If jobs are ignored when removing a namespace, those jobs will be deleted _prior to_ the namespace being removed. A Nomad GC call will be run after any ignored jobs are removed to ensure that the removed state is synced to the cluster.
+
 ## node
 
 node specific commands that act on all Nomad clients that match the filters provided, rather than a single node

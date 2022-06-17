@@ -75,6 +75,10 @@ func GC(c *cli.Context, logger *log.Logger) error {
 				}
 				logger.Infof("Job '%s' in region/namespace '%s/%s' successfully deleted", job.ID, region, namespace.Name)
 			}
+
+			if err := nomadClient.System().GarbageCollect(); err != nil {
+				return fmt.Errorf("error running garbage collection: %w", err)
+			}
 		}
 
 		if c.Bool("dry") {
