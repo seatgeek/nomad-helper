@@ -58,6 +58,10 @@ func GC(c *cli.Context, logger *log.Logger) error {
 				return err
 			}
 
+			if len(jobs) == 0 {
+				continue
+			}
+
 			if c.Bool("dry") {
 				logger.Infof("Skipping deletion of %d jobs in region/namespace %s/%s because dry flag was provided", len(jobs), region, namespace.Name)
 				continue
@@ -75,16 +79,22 @@ func GC(c *cli.Context, logger *log.Logger) error {
 				}
 				logger.Infof("Job '%s' in region/namespace '%s/%s' successfully deleted", job.ID, region, namespace.Name)
 			}
+		}
+	}
 
-			if err := nomadClient.System().GarbageCollect(); err != nil {
-				return fmt.Errorf("error running garbage collection: %w", err)
-			}
-
-			if err := nomadClient.System().ReconcileSummaries(); err != nil {
-				return fmt.Errorf("error reconciling summaries: %w", err)
-			}
+	if !c.Bool("dry") {
+		logger.Infof("executing garbage collection")
+		if err := nomadClient.System().GarbageCollect(); err != nil {
+			return fmt.Errorf("error running garbage collection: %w", err)
 		}
 
+		logger.Infof("executing summary reconciliation")
+		if err := nomadClient.System().ReconcileSummaries(); err != nil {
+			return fmt.Errorf("error reconciling summaries: %w", err)
+		}
+	}
+
+	for _, namespace := range deletableNamespaces {
 		if c.Bool("dry") {
 			logger.Infof("Skipping deletion of namespace %s because dry flag was provided", namespace.Name)
 			continue
