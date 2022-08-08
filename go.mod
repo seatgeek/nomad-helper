@@ -7,8 +7,8 @@ require (
 	github.com/alecthomas/chroma v0.10.0
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/gorilla/mux v1.8.0
-	github.com/hashicorp/nomad v1.3.1
-	github.com/hashicorp/nomad/api v0.0.0-20220407202126-2eba643965c4
+	github.com/hashicorp/nomad v1.3.3
+	github.com/hashicorp/nomad/api v0.0.0-20220707195938-75f4c2237b28
 	github.com/karlseguin/ccache v2.0.3+incompatible
 	github.com/karlseguin/expect v1.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
@@ -23,5 +23,4 @@ require (
 	gopkg.in/karlseguin/expect.v1 v1.0.1 // indirect
 	gopkg.in/workanator/go-ataman.v1 v1.0.0-20201223053604-e3b73d2e8108
 	gopkg.in/yaml.v2 v2.4.0
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
