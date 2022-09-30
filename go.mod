@@ -1,6 +1,6 @@
 module github.com/seatgeek/nomad-helper
 
-go 1.15
+go 1.19
 
 require (
 	github.com/Jeffail/tunny v0.0.0-20210126202424-1b37d6cb867a
