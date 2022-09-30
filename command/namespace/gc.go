@@ -79,6 +79,10 @@ func GC(c *cli.Context, logger *log.Logger) error {
 			if err := nomadClient.System().GarbageCollect(); err != nil {
 				return fmt.Errorf("error running garbage collection: %w", err)
 			}
+
+			if err := nomadClient.System().ReconcileSummaries(); err != nil {
+				return fmt.Errorf("error reconciling summaries: %w", err)
+			}
 		}
 
 		if c.Bool("dry") {
