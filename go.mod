@@ -7,7 +7,7 @@ require (
 	github.com/alecthomas/chroma v0.10.0
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/gorilla/mux v1.8.0
-	github.com/hashicorp/nomad v1.4.2
+	github.com/hashicorp/nomad v1.4.3
 	github.com/hashicorp/nomad/api v0.0.0-20221006174558-2aa7e66bdb52
 	github.com/karlseguin/ccache v2.0.3+incompatible
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
@@ -38,6 +38,7 @@ require (
 	github.com/hashicorp/consul/api v1.15.3 // indirect
 	github.com/hashicorp/cronexpr v1.1.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-bexpr v0.1.11 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.3.1 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
@@ -56,10 +57,10 @@ require (
 	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.1-vault-3 // indirect
-	github.com/hashicorp/memberlist v0.4.0 // indirect
+	github.com/hashicorp/memberlist v0.5.0 // indirect
 	github.com/hashicorp/raft v1.3.11 // indirect
 	github.com/hashicorp/raft-autopilot v0.1.6 // indirect
-	github.com/hashicorp/serf v0.10.0 // indirect
+	github.com/hashicorp/serf v0.10.1 // indirect
 	github.com/hashicorp/vault/api v1.8.1 // indirect
 	github.com/hashicorp/vault/sdk v0.6.0 // indirect
 	github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87 // indirect
@@ -73,6 +74,7 @@ require (
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/hashstructure v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/mitchellh/pointerstructure v1.2.1 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/oklog/run v1.1.0 // indirect
