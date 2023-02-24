@@ -3,7 +3,7 @@ module github.com/seatgeek/nomad-helper
 go 1.19
 
 require (
-	github.com/Jeffail/tunny v0.0.0-20210126202424-1b37d6cb867a
+	github.com/Jeffail/tunny v0.1.4
 	github.com/alecthomas/chroma v0.10.0
 	github.com/buildkite/terminal-to-html v3.2.0+incompatible
 	github.com/gorilla/mux v1.8.0
